@@ -10,6 +10,7 @@
 #include <iomanip> // manipulators
 #include "utils.h"
 #include "feature.h"
+#include "gff_validation.h"
 
 #ifdef CAPMON_EXT
 #include <mysql/mysql.h> 
@@ -255,6 +256,8 @@ struct gff_holder {
 /// but add back non-unique id checks for gene/transcript?!?
 
 /// some checks can be done at once e.g. cds->exon mapping - if no cds to map clearly there's an issue?!?
+
+namespace details {
 
 long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringstream& strstrm, name_holder& nh, gff_holder& gh) {
 // long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringstream& strstrm, name_holder& nh, gff_holder& gh, DB_PARAMS* dbp = 0) {
@@ -589,7 +592,7 @@ long long gff_basic_validation_1d_individual_model_checks (long long bitflag, st
 
     cout << "\n[1b] individual model checks!??!\n";
 
-///y fragmneted model check
+///y fragmneted model check, overlapping exons, non-mapping cds?!? - clearly have a way to by-pass last two due to time-complexities etc.?!?
 
 //fstart
 
@@ -647,11 +650,14 @@ long long gff_basic_validation_1d_individual_model_checks (long long bitflag, st
                 // for (auto exon_it = ++mmit.first ; exon_it != mmit.second && !break_out; ++exon_it) { 
                 // duh - doing nested iteration 1x?!? for (auto exon_it = ++mmit.first, exon_it2 = mmit.first ; exon_it != mmit.second ; ++exon_it) { 
 
+//// simple fragmentation due to positional extraction
+
                     if((exon_it->second).gstart()<min_start) min_start=(exon_it->second).gstart();
                     if((exon_it->second).gend()>max_end) max_end=(exon_it->second).gend();
 
+
+//// exon overlap
                     // clearly horrible time complexity - should have this as option?!?
-                    // could put cds checks here - i.e. just mark of if found no cds and or each one had exon found?!?
                     //y simply break if on option value?!?
                     for (auto exon_it2 = mmit.first ; exon_it2 != mmit.second ; ++exon_it2) { 
                     // duh... for ( ; exon_it2 != mmit.second ; ++exon_it2) { 
@@ -661,15 +667,18 @@ long long gff_basic_validation_1d_individual_model_checks (long long bitflag, st
                         // else if((exon_it2->second).gstart()>=(exon_it->second).gend()&&(exon_it2->second).gend()<=(exon_it->second).gstart()) {
                             bitflag |= OVERLAPPING_EXONS;
                             strstrm << "<p>exon " << exon_it->first << " (" << (exon_it->second).gstart() << "-" << (exon_it->second).gend()
-                              << ") and " << exon_it2->first << " (" << (exon_it2->second).gstart() << "-" << (exon_it2->second).gend() << ") overlap!</p>\n"; 
-
+                              << ") and " << exon_it2->first << " (" << (exon_it2->second).gstart() << "-" << (exon_it2->second).gend() 
+                              << ") overlap!</p>\n<p>Bypassing further overlap checks</p>\n"; 
+                            
                             break_out = true; // a nasty mess not much point in continueing?!?
                             break;
                         }
                         if (break_out) break;
                     }
-
                 }
+
+//// put non-mapping cds check in?!?
+                    // could put cds checks here - i.e. just mark off cds that are found - then check all were found?!?
 
                 if ((it->second).gstart()!=min_start||(it->second).gend()!=max_end) {
                     std::cout << "[multi exon] FRAGMENTED MODEL " << it->first << std::endl; 
@@ -677,17 +686,12 @@ long long gff_basic_validation_1d_individual_model_checks (long long bitflag, st
                       <<"<pre>    transcript: "<<(it->second).gstart()<<"-"<<(it->second).gend()<<"\n    exons: "<<min_start<<"-"<<max_end<<"</pre>\n";
                     bitflag |= PARTIAL_MODEL;
                 }
+
             break; }
         };
 
     }
 
-//fend
-
-
-///y overlapping exon check?!?
-
-//fstart
 //fend
 
     return bitflag;
@@ -824,44 +828,14 @@ long long generic_validation_and_store (const char* filename, std::string& repor
     // should the mysql stuff go into it's own function - i.e. that has empty body without inclusion?!?
 }
 
-// have summary separate so have single routine that returns bitflag and data structure that capmon calls - use it for test all flags against appropriate files?!?
+bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp = 0) {
+// bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp) {
 
-bool capmon_gff_validation (const char* filename, std::string& report, DB_PARAMS* dbp = 0) {
-
-    gff_holder gh; // just let it go out of scope?!?
-
-    std::stringstream strstrm(std::stringstream::out);
-
-    long long bitflag = 0;
-
-{ // just avoiding persistance of name_holder for no reason?!?
-
-    name_holder nh;
-
-    bitflag = gff_basic_validation_1a_gff_parse (filename, strstrm, nh, gh);
-    // bitflag = gff_basic_validation_1a_gff_parse (filename, strstrm, nh, gh, dbp);
-    // long long bitflag = gff_basic_validation_1a_gff_parse (filename, strstrm, dummy, dbp);
-
-    bitflag = gff_basic_validation_1b_gff_name_checks (bitflag, strstrm, nh, gh);
-
-//     if(dbp) // running directly without CAPMON_EXT will just moan at you - i.e. don't want unecessary linking dependencies?!?
-      bitflag = gff_basic_validation_1c_scfnames (bitflag, strstrm, nh, dbp);
-
-    //y could put in fasta checking?!?
-
+    cout << "\n\n\n*** this is where we put tests for EVERY bitflag test!?!?! ***\n\n\n";
 }
 
-    bitflag = gff_basic_validation_1d_individual_model_checks(bitflag, strstrm, gh);
+std::string capmon_html_table(long long bitflag,std::stringstream& strstrm) {
 
-    gff_basic_validation_1x_file_cleanup (bitflag,filename,strstrm);
-
-
-
-
-
-
-    /////// summary and capmon decision?!?
-       
     std::stringstream strstrm2(std::stringstream::out);
 
     // print_row using simple | thus if any of the flags are true will report
@@ -925,13 +899,66 @@ bool capmon_gff_validation (const char* filename, std::string& report, DB_PARAMS
     }
     // cout << strstrm.str() << endl;
 
-    report = strstrm2.str();
+    std::string report = strstrm2.str();
 
-/// this actually goes later - i.e. in caller?!?
-/// to do this can either turn off ALL bits apart from the ones of interest and test?!? e.g. bm & ~(mask1|mask2...)!=0
-/// alternatively - and probably more readibly just a compound mask directly and test e.g. if (bm & multiplemask)==multiplemask)
-/// i.e. exactly same as testing for a single bit?!? - BUT THAT IS FOR TESTING THEM ALL AT ONCE!?!?
+    return std::move(report);
 
+}
+
+
+}
+
+// namespace xxx { void foo() { cout << "BLAH\n"; } }
+
+// have summary separate so have single routine that returns bitflag and data structure that capmon calls - use it for test all flags against appropriate files?!?
+
+bool capmon_gff_validation (const char* filename, std::string& report, DB_PARAMS* dbp = 0) {
+
+    ///y in separate wrapper for gff_basic_validation_checks have this actually get returned to re-building?!?
+    gff_holder dummy; // just let it go out of scope?!?
+
+    std::stringstream strstrm(std::stringstream::out);
+
+    long long bitflag = 0;
+
+{ // just avoiding persistance of name_holder for no reason?!?
+
+    /////// clearly can avoid separate name checks if always re-building - but we aren't generally?!?
+
+    name_holder nh;
+
+    bitflag = details::gff_basic_validation_1a_gff_parse (filename, strstrm, nh, dummy);
+    // bitflag = details::gff_basic_validation_1a_gff_parse (filename, strstrm, nh, dummy, dbp);
+    // long long bitflag = details::gff_basic_validation_1a_gff_parse (filename, strstrm, dummy, dbp);
+
+    bitflag = details::gff_basic_validation_1b_gff_name_checks (bitflag, strstrm, nh, dummy);
+
+//     if(dbp) // running directly without CAPMON_EXT will just moan at you - i.e. don't want unecessary linking dependencies?!?
+      bitflag = details::gff_basic_validation_1c_scfnames (bitflag, strstrm, nh, dbp);
+
+    //y could put in fasta checking?!?
+
+}
+
+    ///// perhaps have break in initial exon loop checking for fragmentation to by-pass nested loop?!?!? i.e. linear/quadratic?!?
+    ///// or just have flag to by-pass the call?!?
+    bitflag = details::gff_basic_validation_1d_individual_model_checks(bitflag, strstrm, dummy);
+
+    details::gff_basic_validation_1x_file_cleanup (bitflag,filename,strstrm);
+
+    /////// now ready to do all bitflag tests vs. file examples?!?
+
+    /////// also in case of converter can re-build?!?
+
+    report = details::capmon_html_table(bitflag,strstrm);
+
+
+    /// capmon decision?!?
+       
+
+// to do this can either turn off ALL bits apart from the ones of interest and test?!? e.g. bm & ~(mask1|mask2...)!=0
+// alternatively - and probably more readibly just a compound mask directly and test e.g. if (bm & multiplemask)==multiplemask)
+// i.e. exactly same as testing for a single bit?!? - BUT THAT IS FOR TESTING THEM ALL AT ONCE!?!?
 //       |(!cds_PRESENT&&!PSEUDOGENES_PRESENT)
     
     ///r will return the bitflag at this point - then interogate it in caller?!?
@@ -947,73 +974,24 @@ bool capmon_gff_validation (const char* filename, std::string& report, DB_PARAMS
 
 int main () {
 
-/// so we get this going in isolation and then it can be used more generally - and allow new tests to be added much more easily?!?!
-
-// run the file formating only checks
-// vector<features> x?!?
-    // long long bitflag = gff_basic_validation_1a_gff_parse(x);
-    //
-    // gff_checks_1b - exon coverage?!?
-    // overlapping exons?!?...
-    //
-    // i.e. have a validation level - low stringency only does 1a
+    // have a validation level - low stringency only does 1a
     // higher stringency does the actual model checks?!?
-    // 1a only bothers populating a structure of features if validation level is higher?!?
-    //
-    // these names are likely to be keys in map datastructure : bool unknown_scaffold = false;
-//       << print_row("A11","Unknown scaffold names" ,unknown_scaffold) 
-
-
-
-
 
     cout << "gonna check file = ";
     std::string summary;
+
+    //// now we start putting in a test function?!?
+    details::validation_tests("Yb.gff3",summary);
 
     // cout << " " << std::boolalpha << capmon_gff_validation("exonprob.gff",summary)<<"\n\n";
     cout << " " << std::boolalpha << capmon_gff_validation("Yb.gff3",summary)<<"\n\n";
 
     cout << summary;
 
-//     return 0;
-
-
+    //     return 0;
     // cout << " " << std::boolalpha << gff_basic_validation_1a_gff_parse("../gff/Yb_superscaffold_v1-0.gff3",summary)<<"\n\n";
-
+    details::validation_tests("Yb.gff3",summary);
 
     cout << "\n\ndone\n\n";
 }
 
-    /*
-    while(getline(in, s)) { // Discards newline char
-        // problem is that the file is buffered and we now need to wipe the damned thing every single line internally - better close n re-open?!?
-        // cout << "at position: " << in.tellg() << endl;
-        // really should use full match on .*\r\n - i.e. \r\n$...
-        if(regex_search(s,gff::reg_cr))
-          non_printing_x0d = true;
-    }
-    if (non_printing_x0d) {
-        char cmdtmp[STRING_SIZE];
-        //y should specifically use \\r\\n$
-        sprintf(cmdtmp,"perl -i -pe 's/\\r//' %s",filename);
-        strstrm << "> removing carriage returns in-place" << endl;
-        if (system(cmdtmp) != 0) 
-            throw runtime_error ("problem removing carriage returns!");
-    }
-    in.close();
-    in.open();
-    */
-    /*
-    ///y for set_difference simply need sorted ranges (associative containers are always sorted!?!) and an output 
-    ///y iterator to put the difference in - i.e. one that supports * = ++ - deref, assigment and incrementation pointer operations etc..
-    ///b hence can shove back into a set, but since it must be unique as we're using sets there's little point
-    std::vector<std::string> hey;
-    // std::vector<std::string>::iterator it = set_difference(
-    set_difference(
-        gene_ids.begin(),gene_ids.end(),
-        transcript_parents.begin(),transcript_parents.end(), 
-        ///r back_inserter() - can be used if the recipient container supports the push_back() member function
-        //back_inserter(container_supporting_push_back) 
-        //front_inserter(container_supporting_push_front) 
-        std::back_inserter(hey));
-    */
