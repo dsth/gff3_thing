@@ -14,6 +14,7 @@ scaffold:1:Yb_superscaffold:1:1333114:1	HGC	contig	1	1333114	.	.	.	ID=Yb_supersc
 >fdsafd;
 Yb_superscaffold	HGC	gene	2219	25547	.	-	.	ID=HMEL002000;Name=HMEL002000;
 Yb_superscaffold	HGC	mRNA	2219	25547	.	-	.	ID=HMEL002000-RA;Name=HMEL002000-RA;Parent=HMEL002000;
+Yb_superscaffold	HGC	mRNA	2219	25547	.	-	.	ID=HMEL002000-RA;Name=HMEL002000-RA;Parent=HMEL002000;
 Yb_superscaffold	HGC	exon	25204	25547	.	-	.	ID=HMEL002000-RA-E1A;Parent=HMEL002000-RA;
 FT ;
 Yb_superscaffold	HGC	exon	23518	24479	.	-	.	ID=HMEL002000-RA-E2A;Parent=HMEL002000-RA;
@@ -65,7 +66,7 @@ Yb_superscaffold	HGC	exon	28605	28767	.	-	.	ID=HMEL002001-RA-E4A;Parent=HMEL0020
 Yb_superscaffold	HGC	CDS	48599	48613	.	-	0	Parent=HMEL002001-RA;
 Yb_superscaffold	HGC	CDS	34674	34823	.	-	0	Parent=HMEL002001-RA;
 Yb_superscaffold	HGC	CDS	29311	29388	.	-	0	Parent=HMEL002001-RA;
-Yb_superscaffold	HGC	gene	53927	60787	.	-	.	ID=HMEL002002;Name=HMEL002002;
+Yb_superscaffold	HGC	grne	53927	60787	.	-	.	ID=HMEL002002;Name=HMEL002002;
 Yb_superscaffold	HGC	mRNA	53927	60787	.	-	.	ID=HMEL002002-RA;Name=HMEL002002-RA;Parent=HMEL002002;
 Yb_superscaffold	HGC	exon	60728	60787	.	-	.	ID=HMEL002002-RA-E1A;Parent=HMEL002002-RA;
 Yb_superscaffold	HGC	exon	59548	59730	.	-	.	ID=HMEL002002-RA-E2A;Parent=HMEL002002-RA;

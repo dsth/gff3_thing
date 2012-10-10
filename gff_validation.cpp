@@ -40,6 +40,7 @@ struct name_holder {
     std::set<std::string> scaffolds;
     std::set<std::string> gene_ids;
     std::set<std::string> parents;
+    // there's really not much reason for gene_transcript_ids to exist!?!?
     std::set<std::string> gene_transcript_ids;
 };
 
@@ -236,6 +237,8 @@ struct gff_holder {
 /// let them do silly things like have different stranded-ness between exons, genes etc., - i.e. only use transcript strand - check consistency?!?
 /// but add back non-unique id checks for gene/transcript?!?
 
+/// some checks can be done at once e.g. cds->exon mapping - if no cds to map clearly there's an issue?!?
+
 long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringstream& strstrm, name_holder& nh, gff_holder& gh) {
 // long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringstream& strstrm, name_holder& nh, gff_holder& gh, DB_PARAMS* dbp = 0) {
 
@@ -250,18 +253,9 @@ long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringst
     std::ifstream in(filename);
     if(in == 0) throw runtime_error("problem opening gff file");
 
-///////// needs planning?!?
-//////// what do we want to test for really?!?
-/////// names not adding up?!? - clearly a set is simplest
-////// fragmentation - need start/end of mRNA via id and exons via parent
-///// overlapping exons - same as above - i.e. simply the exons via parent
-//// however, id for mrna_coords clearly makes transcript_ids superfluous - i.e. just extract the names from there?!?
-/// also if start using extended structures for mRNA and/or storing cds then you've stored the same info multiple times e.g. transcript_parents in map of mrna...
-
-/// some checks can be done at once e.g. cds->exon mapping - if no cds to map clearly there's an issue?!?
-
-    // reduncant : std::set<std::string> transcript_parents;
+    // redundant : std::set<std::string> transcript_parents;
     // redundant : std::set<std::string> transcript_ids;
+
     // get length of file: // is.seekg (0, ios::end); // length = is.tellg(); // is.seekg (0, ios::beg);
 
 ///y parse features
@@ -269,6 +263,7 @@ long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringst
     std::string s;
     unsigned char error_counter = 0;
     long long ln = 0;
+
     while(getline(in, s)) { // Discards newline char
 
 /// 1 : 'ordered'-ish series of checks of actual line format/headers?!?
@@ -359,10 +354,9 @@ long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringst
 
 /// 2 : we have a feature
 
-//fstart
-        //y really not worth hassle of parsing col9 without regex?!?
+//fstart //y really not worth hassle of parsing col9 without regex?!?
 
-        bitflag &= ~NO_FEATLINES; // featlines++;
+        bitflag &= ~NO_FEATLINES;
 
         std::stringstream featurestrm(s); // lazy but we know it adheres to correct format so can't be bothered matching?!?
         std::string scfname, score, strand, source, type, ignore, annot;
@@ -373,12 +367,12 @@ long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringst
 
         if (regex_match(type,gff::reg_ignore_types)) continue; // ignore contigs etc.
 
-        if (!regex_match(type,gff::reg_allow_types)) {
+        if (!regex_match(type,gff::reg_allow_types)) { // block other types?!?
             strstrm << "<p>Ilegal feature type='" << type << "'</p>\n";
             bitflag |= NON_PERMITTED_BIOTYPES;
         }
         
-        // horrible apollo ids with coords inserted?!?
+        // horrible apollo ids with coords inserted - temporarily clean them up?!?
         if (!scfname.empty() && regex_match(scfname,match_obj,gff::reg_scfname)) {
             nh.scaffolds.insert(match_obj[1]);
             bitflag|=APOLLO_SCF_NAMES; 
@@ -386,7 +380,7 @@ long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringst
 
 //fend 
 
-/// 3 : we have a 2o or 3o feature (have id and parent) : transcript or exon/CDS features
+/// 2a : we have a 2o or 3o feature (have id and parent) : transcript or exon/CDS features
 
 //fstart 
 
@@ -395,37 +389,32 @@ long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringst
             std::string id = match_obj[1];
             std::string parent = match_obj2[1];
 
-            // we actually ifnogre this...
+            // we actually ignore this...
             if(id.find(' ')!=std::string::npos || parent.find(' ')!=std::string::npos) bitflag|=NAMES_HAVE_SPACES;
 
-            if(type == "CDS") bitflag|=CDS_PRESENT;
+            ///y collect exon/cds
+            // if(type == "CDS") bitflag|=CDS_PRESENT; // start collecting cds?!?
+            if(type == "CDS") { 
+                bitflag|=CDS_PRESENT;
+                gh.cdsbymrna_coords.insert(std::pair<std::string,feature_min>(parent,feature_min(start,end))); 
+            } else if(type == "exon") gh.exonbymrna_coords.insert(std::pair<std::string,feature_min>(parent,feature_min(start,end))); // why was this separate conditional?!?
 
-            if(type == "exon") gh.exonbymrna_coords.insert(std::pair<std::string,feature_min>(parent,feature_min(start,end))); 
-
-            if (type == "exon" || type == "CDS") {
-                bitflag &= ~NO_EXON_CDS;
+            ///y must be permitted 2o or exon/cds 3o feature?!?
+            if (type == "exon" || type == "CDS") { 
+                bitflag &= ~NO_EXON_CDS; // just quick name checks...
                 nh.parents.insert(parent);
             } else if (regex_match(type,gff::reg_transcript_biotypes)) {
                 bitflag &= ~NO_TRANSCRIPTS;
-                // handled by mrna_coords below : transcript_ids.insert(id);
-                // handled by mrna_coords below : transcript_parents.insert(parent);
+                // handled by mrna_coords : transcript_ids.insert(id);
+                // handled by mrna_coords : transcript_parents.insert(parent);
+
+                if(nh.gene_transcript_ids.count(id)!=0) {
+                    bitflag |= NON_UNIQUE_ID;
+                    strstrm << "<p>ID tags must be unique : i've seen the ID '"<<id<<"' before (at transcript/gene level no less!)</p>\n";
+                }
+
                 gh.mrna_coords.insert(std::pair<std::string,feature_ext>(id,feature_ext(parent,start,end,strand=="+"?1:0))); 
                 nh.gene_transcript_ids.insert(id);
-                
-                /*
-                // if(transcript_ids.count(id)) non_unique_id = true;
-                if(transcript_ids.count(id)) {
-                    non_unique_id = true;
-                    strstrm << "> id " << id << " is not unique"<< endl;
-                }
-                /
-                // book-keeping for gene/mRNA name overlap
-                // if(gene_transcript_ids.count(id)) non_unique_transcript_id = true;
-                if(gene_transcript_ids.count(id)) { 
-                    non_unique_id = true;
-                    strstrm << "> id " << id << " is not unique"<< endl;
-                }
-                */
 
             } else {
                 bitflag |= NON_PERMITTED_BIOTYPES;
@@ -434,7 +423,7 @@ long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringst
 
 //fend
 
-/// 4 : we have 1o features - only have id
+/// 2b : we have 1o features - only have id
 
 //fstart 
 
@@ -449,33 +438,23 @@ long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringst
             if (type == "gene" || type == "pseudogene") {
 
                 bitflag &= ~NO_GENES;
+
+                if(nh.gene_transcript_ids.count(id)!=0) {
+                    bitflag |= NON_UNIQUE_ID;
+                    strstrm << "<p>ID tags must be unique : i've seen the ID '"<<id<<"' before (at transcript/gene level no less!)</p>\n";
+                }
+
                 nh.gene_ids.insert(id);
                 nh.gene_transcript_ids.insert(id);
 
-                /*
-                // if(gene_ids.count(id)) non_unique_gene_id = true;
-                if(gene_ids.count(id)) {
-                    non_unique_id = true;
-                    strstrm << "> id " << id << " is not unique"<< endl;
-                }
-
-                // book-keeping for gene/mRNA name overlap
-                // if(gene_transcript_ids.count(id)) non_unique_transcript_id = true;
-                if(gene_transcript_ids.count(id)) {
-                    non_unique_id = true;
-                    strstrm << "> id " << id << " is not unique"<< endl;
-                }
-                */
-
             } else {
-                cout << "REALLY NASTY : line=" << __LINE__ << " type=" << type << " file=" << __FILE__ << endl;
                 bitflag |= ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE;
-                strstrm << "<p>The following is not a gene or pseudogene and thus must have a Parent tag: "<<s<<"</p>\n";
+                strstrm << "<p>The following is not a gene/pseudogene and thus must have a Parent tag: </p>\n<pre>    "<<s<<"</pre>\n";
             }
 
 //fend
 
-/// 5 : we have 3o feautres - only parent
+/// 2c : we have 3o feautres - only parent
 
 //fstart 
 
@@ -485,17 +464,18 @@ long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringst
 
             if(parent.find(' ')!=std::string::npos) bitflag|=NAMES_HAVE_SPACES;
 
-            if(type == "CDS") bitflag|=CDS_PRESENT;
+            if(type == "CDS") { // storing these now...
+                bitflag|=CDS_PRESENT;
+                gh.cdsbymrna_coords.insert(std::pair<std::string,feature_min>(parent,feature_min(start,end))); 
+            } else if(type == "exon") gh.exonbymrna_coords.insert(std::pair<std::string,feature_min>(parent,feature_min(start,end))); 
 
-            if(type == "exon") gh.exonbymrna_coords.insert(std::pair<std::string,feature_min>(parent,feature_min(start,end))); 
-
+            ///y is this a very naughty feature?!?
             if (type == "exon" || type == "CDS") {
                 bitflag &= ~NO_EXON_CDS;
                 nh.parents.insert(parent);
             } else {
-                cout << "REALLY NASTY : line=" << __LINE__ << " type=" << type << " file=" << __FILE__ << endl;
                 bitflag |= PARENT_WITHOUT_ID_NOT_CDS_EXON;
-                strstrm << "<p>The following is not a CDS or exon and thus must have an ID tag: "<< s << "</p>\n";
+                strstrm << "<p>The following is not a CDS/exon and thus must have an ID tag: </p>\n<pre>    "<<s<<"</pre>\n";
             }
 
         } else {}
