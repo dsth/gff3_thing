@@ -99,6 +99,17 @@ class print_row {
 std::ostream & nl(std::ostream& os) { return os << " \\\n"; } // nullary maninulator - should probably use an effector with arg...
 
 #define PERMITTED_TRANSCRIPT_TYPES_REGEX    "mRNA|tRNA|pseudogenic_tRNA|rRNA|miRNA|ncRNA|pseudogene"
+enum PERMITTED_BIOTYPES                    { mRNA,tRNA,pseudogenic_tRNA,rRNA,miRNA,ncRNA,pseudogene };
+// should use template/preprocessor to stamp this out?!?
+static std::map<std::string,PERMITTED_BIOTYPES> biotype_resolver = { 
+    std::make_pair("mRNA",mRNA),
+    std::make_pair("pseudogenic_tRNA",pseudogenic_tRNA),
+    std::make_pair("rRNA",rRNA),
+    std::make_pair("miRNA",miRNA),
+    std::make_pair("ncRNA",ncRNA),
+    std::make_pair("pseudogene",pseudogene) 
+};
+
 #define IGNORE_TYPES_REGEX                  "contig|supercontig|match|match_part"
 #define CORE_PERMITTED                      "gene|exon|CDS|"
 #define ALL_PERMITTED                       CORE_PERMITTED PERMITTED_TRANSCRIPT_TYPES_REGEX
@@ -169,13 +180,17 @@ std::ostream & nl(std::ostream& os) { return os << " \\\n"; } // nullary maninul
 #define NO_EXON_CDS                                 (1<<25)
 #define NO_TRANSCRIPTS                              (1<<26)
 
+#define TRANSCRIPT_LACKS_EXONS                      (1<<27)
+#define PROTEIN_CODING_LACKS_CDS                    (1<<28)
+#define OVERLAPPING_EXONS                           (1<<29)
+
 //// perhaps inline the individual checks?!?
 
 static long long PROBLEM = EXCESS_GENE_CONSISTENCY_PROB | EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB 
     | EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB | EXCESS_CDS_EXON_CONSISTENCY_PROB | ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE 
     | PARENT_WITHOUT_ID_NOT_CDS_EXON | UNKNOWN_SCAFFOLD|NON_PERMITTED_BIOTYPES | NEGATIVE_COORDINATES 
     | NON_UNIQUE_ID | EMBL_FORMAT | GFF_FASTA_HEADER | FASTA_HEADER | PARTIAL_MODEL
-    | NO_FEATLINES | NO_GENES | NO_EXON_CDS | NO_TRANSCRIPTS;
+    | NO_FEATLINES | NO_GENES | NO_EXON_CDS | NO_TRANSCRIPTS | TRANSCRIPT_LACKS_EXONS;
 
 // PROBLEM = ~PROBLEM;
 static long long NO_CDS_AND_NO_PSEUDOGENES = CDS_PRESENT | PSEUDOGENES_PRESENT;
@@ -214,15 +229,17 @@ struct feature_ext : public feature_min {
     feature_ext() = delete;
     feature_ext(const feature_min& fm) = delete;
     ~feature_ext () {}
-    feature_ext(std::string p, uint a, uint b, unsigned char s) : _parent(p), feature_min(a,b), _strand(s) {} 
+    feature_ext(std::string p, uint a, uint b, unsigned char s, PERMITTED_BIOTYPES x) : _parent(p), feature_min(a,b), _strand(s), _biotype(x) {} 
     std::string parent() const { return _parent; }   // don't ever return a non-const ref on a private member - i.e. you've just abolished privateness?!?
     unsigned char strand() const { return _strand; }
+    PERMITTED_BIOTYPES biotype() const { return _biotype; }
     // just forward args and default initialise?!?
     // feature_min(uint a, uint b) : _gstart(a), _gend(b), tstart(0), tend(0) {} 
     //
 private :
     std::string _parent;
     unsigned char _strand;
+    PERMITTED_BIOTYPES _biotype;
 };
 
 struct gff_holder {
@@ -413,7 +430,16 @@ long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringst
                     strstrm << "<p>ID tags must be unique : i've seen the ID '"<<id<<"' before (at transcript/gene level no less!)</p>\n";
                 }
 
-                gh.mrna_coords.insert(std::pair<std::string,feature_ext>(id,feature_ext(parent,start,end,strand=="+"?1:0))); 
+///r risky?!?                if(biotype_resolver.find(type)==biotype_resolver.end()) throw std::runtime_error("oh dear caused a bug?!?!");
+                // instead of grabbing iterator and checking if 1-past-the-end could do a count check!?!
+                // if(biotype_resolver.count(type)==0) throw std::runtime_error("oh dear caused a bug?!?!");
+
+                // PERMITTED_BIOTYPES benum = biotype_resolver.find(type)->second;
+                //
+                // gh.mrna_coords.insert(std::pair<std::string,feature_ext>(id,feature_ext(parent,start,end,strand=="+"?1:0))); 
+                // gh.mrna_coords.insert(std::pair<std::string,feature_ext>(id,feature_ext(parent,start,end,strand=="+"?1:0,benum))); 
+                gh.mrna_coords.insert(std::pair<std::string,feature_ext>(id,feature_ext(parent,start,end,strand=="+"?1:0,biotype_resolver.find(type)->second))); 
+                
                 nh.gene_transcript_ids.insert(id);
 
             } else {
@@ -558,6 +584,7 @@ cout << "\n[1b] doing id/parent name checks!??!\n";
 
 }
 
+// fragmentation - really just a check for models that have been positionally extracted without checking for gene boundaries?!?
 long long gff_basic_validation_1d_individual_model_checks (long long bitflag, std::stringstream& strstrm, gff_holder& gh) {
 
     cout << "\n[1b] individual model checks!??!\n";
@@ -566,6 +593,8 @@ long long gff_basic_validation_1d_individual_model_checks (long long bitflag, st
 
 //fstart
 
+/// transcripts need their biotype!?!?
+
     //// e! api does NOT use mrna/gene coords and so allows genes to be truncated without problem!?! THUS must check this?!?
     
     ///// this can replace most of the set_diff stuff?!? - i.e. if we don't find the elements!?!
@@ -573,43 +602,79 @@ long long gff_basic_validation_1d_individual_model_checks (long long bitflag, st
 
         int count = gh.exonbymrna_coords.count(it->first);
 
+        if (it->second.biotype()==mRNA && gh.cdsbymrna_coords.count(it->first)==0) {
+            bitflag |= PROTEIN_CODING_LACKS_CDS;
+            strstrm << "<p>Protein-coding transcript "<< it->first << " lacks CDS features (is it a pseudogene?).</p>\n";
+        }
+
         switch (count) {
 
             case 0: std::cout << "move the book-keeping stuff to here?!?"<<std::endl; 
+                bitflag |= TRANSCRIPT_LACKS_EXONS;
+                strstrm << "<p>Transcript "<< it->first << " has no exons!</p>\n";
             break;
 
-            case 1: { 
-
+            case 1: { // single exon case...?!?
                 // following two are equivalent - but not according to standard!?!?
                 // std::_Rb_tree_iterator<std::pair<const std::string, feature_min> > exon_it = exonbymrna_coords.find(it->first);
                 std::multimap<std::string,feature_min>::iterator exon_it = gh.exonbymrna_coords.find(it->first);
                 
                 if ((it->second).gstart()!=(exon_it->second).gstart()||(it->second).gend()!=(exon_it->second).gend()) {
                     std::cout << "[single exon] FRAGMENTED MODEL "<<it->first << std::endl; 
-                    strstrm << "<p>Transcript "<< it->first << " is fragmented (exon features do not fully account for transcript extension; "
-                      <<"transcript: "<<(it->second).gstart()<<"-"<<(it->second).gend()<<", exons: "<<(exon_it->second).gstart()<<"-"<<(exon_it->second).gend()<<").</p>\n";
+                    strstrm << "<p>Transcript "<< it->first << " is fragmented (exon features do not fully account for transcript extension) :</p>\n"
+                      <<"<pre>   transcript: "<<(it->second).gstart()<<"-"<<(it->second).gend()<<"\n    exon: "<<(exon_it->second).gstart()<<"-"<<(exon_it->second).gend()<<"</pre>\n";
                     bitflag |= PARTIAL_MODEL;
                 }
-
             break; }
 
             default: /* declaring vars in switch!?! */ { //std::cout << "check the extent" <<std::endl;
 
+                // get iterator corresponding to range of currenct transcript
                 auto mmit = gh.exonbymrna_coords.equal_range(it->first);
 
                 int min_start = mmit.first->second.gstart();
                 int max_end = mmit.first->second.gend();
 
                 int i=0;
-                for (auto exon_it = ++mmit.first ; exon_it != mmit.second ; ++exon_it) { 
+                ///y seems haven't bothered sorting?!? either way can do other exon checks here!?!
+
+// break - in switch terminates current case, in (do) while, for loops... exits most immediate loop - thus use return... for more or - switch externally scoped flag, break and break again?!?
+
+                bool break_out = false;
+
+                // iterate from second to end of elements within range
+                for (auto exon_it = ++mmit.first ; exon_it != mmit.second; ++exon_it) { 
+                // for (auto exon_it = ++mmit.first ; exon_it != mmit.second && !break_out; ++exon_it) { 
+                // duh - doing nested iteration 1x?!? for (auto exon_it = ++mmit.first, exon_it2 = mmit.first ; exon_it != mmit.second ; ++exon_it) { 
+
                     if((exon_it->second).gstart()<min_start) min_start=(exon_it->second).gstart();
                     if((exon_it->second).gend()>max_end) max_end=(exon_it->second).gend();
+
+                    // clearly horrible time complexity - should have this as option?!?
+                    // could put cds checks here - i.e. just mark of if found no cds and or each one had exon found?!?
+                    //y simply break if on option value?!?
+                    for (auto exon_it2 = mmit.first ; exon_it2 != mmit.second ; ++exon_it2) { 
+                    // duh... for ( ; exon_it2 != mmit.second ; ++exon_it2) { 
+
+                        if(exon_it==exon_it2) continue;
+                        else if((exon_it2->second).gstart()<=(exon_it->second).gend()&&(exon_it2->second).gend()>=(exon_it->second).gstart()) {
+                        // else if((exon_it2->second).gstart()>=(exon_it->second).gend()&&(exon_it2->second).gend()<=(exon_it->second).gstart()) {
+                            bitflag |= OVERLAPPING_EXONS;
+                            strstrm << "<p>exon " << exon_it->first << " (" << (exon_it->second).gstart() << "-" << (exon_it->second).gend()
+                              << ") and " << exon_it2->first << " (" << (exon_it2->second).gstart() << "-" << (exon_it2->second).gend() << ") overlap!</p>\n"; 
+
+                            break_out = true; // a nasty mess not much point in continueing?!?
+                            break;
+                        }
+                        if (break_out) break;
+                    }
+
                 }
 
                 if ((it->second).gstart()!=min_start||(it->second).gend()!=max_end) {
                     std::cout << "[multi exon] FRAGMENTED MODEL " << it->first << std::endl; 
-                    strstrm << "<p>Transcript "<< it->first << " is fragmented (exon features do not fully account for transcript extension; "
-                      <<"transcript: "<<(it->second).gstart()<<"-"<<(it->second).gend()<<", exons: "<<min_start<<"-"<<max_end<<").</p>\n";
+                    strstrm << "<p>Transcript "<< it->first << " is fragmented (exon features do not fully account for transcript extension) :</p>\n"
+                      <<"<pre>    transcript: "<<(it->second).gstart()<<"-"<<(it->second).gend()<<"\n    exons: "<<min_start<<"-"<<max_end<<"</pre>\n";
                     bitflag |= PARTIAL_MODEL;
                 }
             break; }
@@ -905,13 +970,16 @@ int main () {
     cout << "gonna check file = ";
     std::string summary;
 
-    cout << " " << std::boolalpha << capmon_gff_validation("exonprob.gff",summary)<<"\n\n";
-
+    // cout << " " << std::boolalpha << capmon_gff_validation("exonprob.gff",summary)<<"\n\n";
     cout << " " << std::boolalpha << capmon_gff_validation("Yb.gff3",summary)<<"\n\n";
+
+    cout << summary;
+
+//     return 0;
+
 
     // cout << " " << std::boolalpha << gff_basic_validation_1a_gff_parse("../gff/Yb_superscaffold_v1-0.gff3",summary)<<"\n\n";
 
-    cout << summary;
 
     cout << "\n\ndone\n\n";
 }
