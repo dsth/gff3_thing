@@ -330,23 +330,23 @@ long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringst
 
             // be more helpful?!? already know the line isn't properly formed - i.e. with 8 tabs etc.?!?
             if(error_counter<MAX_BAD_LINES) { 
-              strstrm << "<p>line " << ln << " does not have gff 9-col, tab-delimited format :</p>\n<p>";
+              strstrm << "<p>line " << ln << " does not have gff 9-col, tab-delimited format ";
 
                 int tabs = count(s.begin(),s.end(),'\t');
                 int spaces = count(s.begin(),s.end(),' ');
 
                 if(tabs==8 && spaces < 7) // if(tabs==8) {
-                strstrm << "- start & end must be numeric and strand must conform to '+' or '-' " << ln << " : ";
+                strstrm << "- start & end must be numeric and strand must conform to '+' or '-'";
                 else if (tabs > 5 && tabs < 11) // put in check on number of spaces?!?
-                strstrm << "- please check all 9 columns are present " << ln << " : ";
+                strstrm << "- please check all 9 columns are present";
                 else if (spaces > 7 && spaces < 9 && tabs < 3) // tabs check?!?
-                strstrm << "- is this line delimited with spaces and not tabs? " << ln << " : ";
+                strstrm << "- is this line delimited with spaces and not tabs?";
                 else if (regex_match(s,gff::reg_sequence)) 
-                strstrm << "- this line looks like sequence. " << ln << " : ";
+                strstrm << "- this line looks like sequence.";
                 else 
-                strstrm << "- i'm really not sure what this is? " << ln << " : ";
+                strstrm << "- i'm really not sure what this is?";
 
-                strstrm << s << "</p>\n";
+                strstrm << " :</p>\n<pre>    " << s << "</pre>\n";
 
             } else if (error_counter==MAX_BAD_LINES) 
               strstrm<<"<p>Non 9-column, tab-delimited format errors truncated.</p>\n";
