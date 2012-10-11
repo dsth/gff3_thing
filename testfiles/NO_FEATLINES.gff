@@ -1,0 +1,10 @@
+Yb_superscaffold	gene	2219	25547	.	-	.	ID=HMEL002000;Name=HMEL002000;
+Yb_superscaffold	mRNA	2219	25547	.	-	.	ID=HMEL002000-RA;Name=HMEL002000-RA;Parent=HMEL002000;
+Yb_superscaffold	exon	25204	25547	.	-	.	ID=HMEL002000-RA-E1A;Parent=HMEL002000-RA;
+Yb_superscaffold	exon	23518	24479	.	-	.	ID=HMEL002000-RA-E2A;Parent=HMEL002000-RA;
+Yb_superscaffold	exon	22935	23067	.	-	.	ID=HMEL002000-RA-E3A;Parent=HMEL002000-RA;
+Yb_superscaffold	exon	7188	7527	.	-	.	ID=HMEL002000-RB-E3A;Parent=HMEL002000-RA;
+Yb_superscaffold	exon	6840	7059	.	-	.	ID=HMEL002000-RB-E4A;Parent=HMEL002000-RA;
+Yb_superscaffold	exon	6386	6501	.	-	.	ID=HMEL002000-RA-E6A;Parent=HMEL002000-RA;
+Yb_superscaffold	exon	5233	5389	.	-	.	ID=HMEL002000-RA-E7A;Parent=HMEL002000-RA;
+Yb_superscaffold	exon	4544	4800	.	-	.	ID=HMEL002000-RA-E8A;Parent=HMEL002000-RA;
