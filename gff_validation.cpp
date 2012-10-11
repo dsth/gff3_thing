@@ -9,6 +9,12 @@
 #include <bitset>
 // #include "boost/lambda/lambda.hpp"
 
+///y PRESUMABLY BINDING PRECENDENCE RESULTS IN THE EQUALITY TEST BEING APPLIED TO CERTAIN PARTS?!?!
+
+/////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!?
+/////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!?
+/////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!?
+
 #include <iomanip> // manipulators
 #include "utils.h"
 #include "feature.h"
@@ -32,7 +38,7 @@
 
 #define TESTIT(x,y) cout << "checking " #x << "\n"; assert(check_raw_consistency_tests (#x, report)==x|y)
 
-#define CHECKIT(x) cout << "\n> checking file " #x ".gff : \n"; bitflag = check_raw_consistency_tests (#x, report)
+#define CHECKIT(x) cout << "\n> checking file " #x ".gff : \n"; bitflag = check_raw_consistency_tests (#x, report); cout << #x " =\n\t" << std::bitset<sizeof(long long)*8>(x) << "\n"
 
 unsigned long long check_raw_consistency_tests (const char*, std::string&);
 
@@ -168,7 +174,7 @@ static std::map<std::string,PERMITTED_BIOTYPES> biotype_resolver = {
 #define NAMES_HAVE_SPACES                           (1ull<<1)
 #define LINES_WO_9COLS                              (1ull<<2)
 #define LINE_ENDINGS                                (1ull<<3)
-#define ILEGAL_FEAT_TYPES                           (1ull<<4)
+// #define ILEGAL_FEAT_TYPES                           (1ull<<4)
 
 #define EXCESS_GENE_CONSISTENCY_PROB                (1ull<<5)
 #define EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB      (1ull<<6)
@@ -188,7 +194,8 @@ static std::map<std::string,PERMITTED_BIOTYPES> biotype_resolver = {
 
 // no_CDS_without_pseudogene = false; // only processing protein coding via cap
 #define PSEUDOGENES_PRESENT                         (1ull<<17)
-#define CDS_PRESENT                                 (1ull<<18)
+// #define CDS_PRESENT                                 (1ull<<18)
+#define NO_CDS                                      (1ull<<18)
 
 #define EMBL_FORMAT                                 (1ull<<19)
 #define GFF_FASTA_HEADER                            (1ull<<20)
@@ -207,14 +214,14 @@ static std::map<std::string,PERMITTED_BIOTYPES> biotype_resolver = {
 
 //// perhaps inline the individual checks?!?
 
-static unsigned long long PROBLEM = EXCESS_GENE_CONSISTENCY_PROB | EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB 
+static unsigned long long PROBLEM = ( EXCESS_GENE_CONSISTENCY_PROB | EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB 
     | EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB | EXCESS_CDS_EXON_CONSISTENCY_PROB | ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE 
     | PARENT_WITHOUT_ID_NOT_CDS_EXON | UNKNOWN_SCAFFOLD|NON_PERMITTED_BIOTYPES | NEGATIVE_COORDINATES 
     | NON_UNIQUE_ID | EMBL_FORMAT | GFF_FASTA_HEADER | FASTA_HEADER | PARTIAL_MODEL
-    | NO_FEATLINES | NO_GENES | NO_EXON_CDS | NO_TRANSCRIPTS | TRANSCRIPT_LACKS_EXONS;
+    | NO_FEATLINES | NO_GENES | NO_EXON_CDS | NO_TRANSCRIPTS | TRANSCRIPT_LACKS_EXONS );
 
 // PROBLEM = ~PROBLEM;
-static unsigned long long NO_CDS_AND_NO_PSEUDOGENES = CDS_PRESENT | PSEUDOGENES_PRESENT;
+// static unsigned long long NO_CDS_AND_NO_PSEUDOGENES = ( CDS_PRESENT | PSEUDOGENES_PRESENT );
 
 namespace gff {
 
@@ -232,7 +239,7 @@ namespace gff {
     static regex reg_feat       ("([^\\t]+)\\t[^\\t]+\\t([^\\t]+)\\t\\d+\\t\\d+\\t[^\\t]+\\t[+-\\.]+\\t[^\\t]+\\t([^\\t]+)");
     // static regex reg_feat       ("([^\\t]+)\\t[^\\t]+\\t([^\\t]+)\\t\\d+\\t\\d+\\t[^\\t]+\\t[+-]+\\t[^\\t]+\\t([^\\t]+)");
     static regex reg_negstart   ("([^\\t]+)\\t[^\\t]+\\t([^\\t]+)\\t-\\d+\\t\\d+\\t[^\\t]+\\t[^\\t]+\\t[^\\t]+\\t([^\\t]+)");
-    static regex reg_negend     ("([^\\t]+)\\t[^\\t]+\\t([^\\t]+)\\t\\d+\\t-\\d+\\t[^\\t]+\\t[^\\t]+\\t[^\\t]+\\t([^\\t]+)");
+    static regex reg_negend     ("([^\\t]+)\\t[^\\t]+\\t([^\\t]+)\\t-?\\d+\\t-\\d+\\t[^\\t]+\\t[^\\t]+\\t[^\\t]+\\t([^\\t]+)"); // tests both strands
 
     static regex reg_scfname    ("(\\w+?\\d+?):\\d+?[:-]\\d+?");
     static regex reg_id         ("ID=([^;]+)");
@@ -286,7 +293,7 @@ unsigned long long gff_basic_validation_1a_gff_parse (const char* filename, std:
     // cout << "\n[1a] parsing\n";
 
     // perhaps make this static?! - nah?!?
-    unsigned long long bitflag = NO_FEATLINES|NO_GENES|NO_EXON_CDS|NO_TRANSCRIPTS;
+    unsigned long long bitflag = ( NO_FEATLINES|NO_GENES|NO_CDS|NO_EXON_CDS|NO_TRANSCRIPTS );
 
     smatch match_obj;
     smatch match_obj2;
@@ -438,7 +445,8 @@ unsigned long long gff_basic_validation_1a_gff_parse (const char* filename, std:
             ///y collect exon/cds
             // if(type == "CDS") bitflag|=CDS_PRESENT; // start collecting cds?!?
             if(type == "CDS") { 
-                bitflag|=CDS_PRESENT;
+                // bitflag|=CDS_PRESENT;
+                bitflag &= ~NO_CDS; // just quick name checks...
                 gh.cdsbymrna_coords.insert(std::pair<std::string,feature_min>(parent,feature_min(start,end))); 
             } else if(type == "exon") gh.exonbymrna_coords.insert(std::pair<std::string,feature_min>(parent,feature_min(start,end))); // why was this separate conditional?!?
 
@@ -515,7 +523,8 @@ unsigned long long gff_basic_validation_1a_gff_parse (const char* filename, std:
             if(parent.find(' ')!=std::string::npos) bitflag|=NAMES_HAVE_SPACES;
 
             if(type == "CDS") { // storing these now...
-                bitflag|=CDS_PRESENT;
+                // bitflag|=CDS_PRESENT;
+                bitflag &= ~NO_CDS; // just quick name checks...
                 gh.cdsbymrna_coords.insert(std::pair<std::string,feature_min>(parent,feature_min(start,end))); 
             } else if(type == "exon") gh.exonbymrna_coords.insert(std::pair<std::string,feature_min>(parent,feature_min(start,end))); 
 
@@ -867,58 +876,110 @@ bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp
 // bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp) {
 
 
+    // CHECKIT(OVERLAPPING_EXONS);
+    // CHECKIT(NON_PERMITTED_BIOTYPES);
+    // CHECKIT(ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE);
+    // CHECKIT(NON_UNIQUE_ID);
+    // CHECKIT(LINES_WO_9COLS);
+    // CHECKIT(BLANK_LINES);
+
     ///y have bit flag test AND bool capmon type return test?!?
 
-    unsignedll bitflag;
-    // CHECKIT(OVERLAPPING_EXONS);
-    CHECKIT(NAMES_HAVE_SPACES);
-    cout << std::bitset<sizeof(long long)*8>(bitflag) << "\n";
-    for (int i = 0 ; i < sizeof(long long)*8 ; i++) if (int x = bitflag&(1ull<<i)) cout << " Active bit " << std::dec << i << "\n"; //  << " and " << x << "\n";
+    unsignedll bitflag=0;
+
+    bitflag = check_raw_consistency_tests("NO_FEATLINES",report);
+    cout << "return value =\n\t" << std::bitset<sizeof(long long)*8>(bitflag) << "\n";
+    for (int i = 0 ; i < sizeof(long long)*8 ; i++) if (int x = bitflag&(1ull<<i)) cout << " Active bit from return " << std::dec << i << "\n"; //  << " and " << x << "\n";
     cout << "\n";
 
+    cout << "summary : " << report ;
 
-        unsignedll x = NAMES_HAVE_SPACES|CDS_PRESENT;
-        unsignedll y = check_raw_consistency_tests ("NAMES_HAVE_SPACES",report);
+/////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!?
+/////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!?
+/////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!?
 
-        /// it is somehting to do with using temporaries?!?
+/*  
+*
+// #define EXCESS_GENE_CONSISTENCY_PROB                (1ull<<5)
+// #define EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB      (1ull<<6)
+// #define EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB  (1ull<<7)
+// #define EXCESS_CDS_EXON_CONSISTENCY_PROB            (1ull<<8)
+// #define PARENT_WITHOUT_ID_NOT_CDS_EXON              (1ull<<11)
+// #define NON_PRINTING_X0D                            (1ull<<14)
+// #define NO_EXON_CDS                                 (1ull<<25)
+// #define NO_TRANSCRIPTS                              (1ull<<26)
+// #define TRANSCRIPT_LACKS_EXONS                      (1ull<<27)
+// #define PROTEIN_CODING_LACKS_CDS                    (1ull<<28)
+// #define PSEUDOGENES_PRESENT                         (1ull<<17)
+//
+    problems?!?
 
-        cout << std::bitset<sizeof(long long)*8>(x) << "\n";
-        cout << std::bitset<sizeof(long long)*8>(y) << "\n";
+// #define NAMES_HAVE_SPACES                           (1ull<<1)
+// #define UNKNOWN_SCAFFOLD                            (1ull<<12)
+*  */
 
-    if(NAMES_HAVE_SPACES|CDS_PRESENT==check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)) {
-    // if(check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)==NAMES_HAVE_SPACES|CDS_PRESENT) {
+    assert( check_raw_consistency_tests("FINE",report) == 0);
 
-        cout << "they are identical - but they shouldn't be!?!\n";
+    assert( check_raw_consistency_tests("NON_PERMITTED_BIOTYPES",report) == (NON_PERMITTED_BIOTYPES|PARENT_WITHOUT_ID_NOT_CDS_EXON) );
+    assert( check_raw_consistency_tests("NON_PERMITTED_BIOTYPES",report) != (PARENT_WITHOUT_ID_NOT_CDS_EXON) );
 
+    assert( check_raw_consistency_tests("LINES_WO_9COLS",report) == LINES_WO_9COLS); // 8 col
+    assert( check_raw_consistency_tests("LINES_WO_9COLS_2STRAND",report) == LINES_WO_9COLS); // 8 col
+    assert( check_raw_consistency_tests("LINES_WO_9COLS_3SEQ",report) == (LINES_WO_9COLS|LINE_ENDINGS) ); // 8 col
 
-        cout << std::bitset<sizeof(long long)*8>(NAMES_HAVE_SPACES|CDS_PRESENT) << "\n";
-        cout << std::bitset<sizeof(long long)*8>(check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)) << "\n";
+    assert( check_raw_consistency_tests("OVERLAPPING_EXONS",report) == OVERLAPPING_EXONS );
 
-    } else {
+    assert( check_raw_consistency_tests("ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE",report) == (NON_PERMITTED_BIOTYPES|ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE) );
+    assert( check_raw_consistency_tests("ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE",report) != (NON_PERMITTED_BIOTYPES) );
+    assert( check_raw_consistency_tests("ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE",report) != (0x8) );
 
-        cout << "they are different\n";
+    assert( check_raw_consistency_tests("NON_UNIQUE_ID",report) == NON_UNIQUE_ID ); // at mRNA level
+    assert( check_raw_consistency_tests("NON_UNIQUE_ID_2EXON",report) == OVERLAPPING_EXONS ); // duplicated an exon
+    assert( check_raw_consistency_tests("NON_UNIQUE_ID_3GENE",report) == NON_UNIQUE_ID ); // at gene level
 
-    }
+    assert( check_raw_consistency_tests("NEGATIVE_COORDINATES",report) == NEGATIVE_COORDINATES ); // at mRNA level
+    assert( check_raw_consistency_tests("NEGATIVE_COORDINATES_2END",report) == NEGATIVE_COORDINATES ); // at mRNA level
+    assert( check_raw_consistency_tests("NEGATIVE_COORDINATES_3BOTH",report) == NEGATIVE_COORDINATES ); // at mRNA level
+    assert( check_raw_consistency_tests("NEGATIVE_COORDINATES_3BOTH",report) != 0x80 );
 
-    if (x==y) { 
-        cout <<"x is equal to y\n"; 
-    } else { 
-        cout << "NOPE\n";
-    }
+    assert( check_raw_consistency_tests("BLANK_LINES",report) == BLANK_LINES );
 
+    assert( check_raw_consistency_tests("APOLLO_SCF_NAMES",report) == APOLLO_SCF_NAMES ); // a bit restrictive - uses scaffold names of form \w+\d and then the coords?!?
 
-    assert(check_raw_consistency_tests ("FINE",report)==CDS_PRESENT);
-    assert(check_raw_consistency_tests ("OVERLAPPING_EXONS",report)==OVERLAPPING_EXONS|CDS_PRESENT|NAMES_HAVE_SPACES);
+    assert( check_raw_consistency_tests("LINE_ENDINGS",report) == LINE_ENDINGS );
 
-    // assert(check_raw_consistency_tests ("",report)== |CDS_PRESENT);
-    assert(check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)==NAMES_HAVE_SPACES|CDS_PRESENT);
+    assert( check_raw_consistency_tests("NO_GENES",report) == (EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB|NO_GENES) );
+    assert( check_raw_consistency_tests("NO_GENES",report) != (EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB) );
+    assert( check_raw_consistency_tests("NO_GENES",report) != 0 );
 
-    cout << std::bitset<sizeof(long long)*8>(check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)) << "\n";
+    assert( check_raw_consistency_tests("NO_CDS",report) == (NO_CDS|PROTEIN_CODING_LACKS_CDS) ); // this was only really used with pseudogene thing but not relevant now with PROTEIN_CODING_LACKS_CDS
+    assert( check_raw_consistency_tests("NO_CDS",report) != (PROTEIN_CODING_LACKS_CDS) ); 
+
+    assert( check_raw_consistency_tests("PARTIAL_MODEL",report) == PARTIAL_MODEL );
+    assert( check_raw_consistency_tests("PARTIAL_MODEL_2ENDPOS",report) == PARTIAL_MODEL );
+    assert( check_raw_consistency_tests("PARTIAL_MODEL_2ENDPOS",report) != 0x800 );
+
+    assert( check_raw_consistency_tests("GFF_FASTA_HEADER",report) == (LINE_ENDINGS|GFF_FASTA_HEADER) );
+
+    assert( check_raw_consistency_tests("FASTA_HEADER",report) == (FASTA_HEADER|LINE_ENDINGS) );
+
+    assert( check_raw_consistency_tests("EMBL_FORMAT",report) == (LINE_ENDINGS|EMBL_FORMAT) );
+
+    assert( check_raw_consistency_tests("NO_FEATLINES",report) == (NO_FEATLINES|LINES_WO_9COLS|NO_GENES|NO_CDS|NO_EXON_CDS|NO_TRANSCRIPTS) );
+
+    // assert( check_raw_consistency_tests("LINES_WO_9COLS",report) == (LINES_WO_9COLS|CDS_PRESENT) );
+    // assert( check_raw_consistency_tests("OVERLAPPING_EXONS",report) == (OVERLAPPING_EXONS|CDS_PRESENT) );
+
 
 
 
 
     cout << "\nTESTS ARE FINE!?!?!\n";
+    return 0; 
+    // assert(check_raw_consistency_tests ("",report)== |CDS_PRESENT);
+    // assert( check_raw_consistency_tests("NAMES_HAVE_SPACES",report) == (NAMES_HAVE_SPACES|CDS_PRESENT) );
+    CHECKIT(NAMES_HAVE_SPACES);
+
 
 
 
@@ -964,6 +1025,54 @@ bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp
     for (int i = 0 ; i < sizeof(error_types) / sizeof(char*) ; i++) cout << "type = "<<*(error_types+i)<< " = " << error_types[i] << "\n";// ...
     for (const char** it = error_types ; it < error_types+(sizeof(error_types)/sizeof(char*)) ; it++) cout << "running test for " << *it << " with file\n";
 
+/*  
+
+cout << "ARGH";
+unsignedll named_mask = NAMES_HAVE_SPACES|CDS_PRESENT;
+unsignedll named_return = check_raw_consistency_tests ("NAMES_HAVE_SPACES",report);
+if(NAMES_HAVE_SPACES|CDS_PRESENT==check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)) {
+if (named_mask==named_return) { 
+if(NAMES_HAVE_SPACES|CDS_PRESENT==named_return) {
+if(0x40002==check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)) {
+if (check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)==named_mask) { 
+
+gives after preprocessing:
+cout << "ARGH";
+unsignedll named_mask = (1ull<<1)|(1ull<<18);
+unsignedll named_return = check_raw_consistency_tests ("NAMES_HAVE_SPACES",report);
+if((1ull<<1)|(1ull<<18)==check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)) {
+if (named_mask==named_return) {
+if((1ull<<1)|(1ull<<18)==named_return) {
+if(0x40002==check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)) {
+if (check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)==named_mask) {
+*/
+/* 
+unsignedll named_mask = NAMES_HAVE_SPACES|CDS_PRESENT;
+unsignedll named_return = check_raw_consistency_tests ("NAMES_HAVE_SPACES",report);
+
+        /// it is somehting to do with using temporaries?!?
+
+        cout << "masks= " << std::bitset<sizeof(long long)*8>(named_mask) << " hmmmm = " << std::hex << named_mask << "\n";
+        cout << "return= " << std::bitset<sizeof(long long)*8>(named_return) << " hmmmm = " << std::hex << named_return << "\n";
+
+    if((NAMES_HAVE_SPACES|CDS_PRESENT)!=check_raw_consistency_tests ("NAMES_HAVE_SPACES",report))
+      cout << " *** --- temporary mask is correctly different when compound mask is put in parenthesis\n";
+
+    if (named_mask!=named_return) 
+      cout << " --- named are correctly different\n";
+
+    if (check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)!=named_mask) 
+      cout <<" --- temporary return is correctly different from named mask\n"; 
+
+    if((NAMES_HAVE_SPACES|CDS_PRESENT)!=named_return)
+      cout <<" *** --- named_return correctly different to temporary mask when put in parenthesis!?!?!?\n";
+
+    if(0x40002!=check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)) 
+      cout << " --- string literal evaulates correctly as different with temporary\n";
+
+
+    cout << std::bitset<sizeof(long long)*8>(check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)) << "\n";
+*/
 
 }
 
@@ -976,7 +1085,7 @@ std::string capmon_html_table(unsigned long long bitflag,std::stringstream& strs
 
       << print_row("A01","Contains EMBL qualifiers",bitflag,EMBL_FORMAT)
 
-      << print_row("A02","Contains fasta entries",bitflag,GFF_FASTA_HEADER|FASTA_HEADER)
+      << print_row("A02","Contains fasta entries",bitflag,(GFF_FASTA_HEADER|FASTA_HEADER))
       // << print_row("A02","Contains fasta entries",gff_fasta_header||fasta_header)
 
       << print_row("A03","Does not contain gene features",bitflag,NO_GENES) 
@@ -1113,12 +1222,13 @@ bool capmon_gff_validation (const char* filename, std::string& report, DB_PARAMS
 
     ///r will return the bitflag at this point - then interogate it in caller?!?
 
-    bool no_cds_and_no_pseudogenes = (bitflag & NO_CDS_AND_NO_PSEUDOGENES)==NO_CDS_AND_NO_PSEUDOGENES; // i.e. testing the exact combination?!?
+    // bool no_cds_and_no_pseudogenes = (bitflag & NO_CDS_AND_NO_PSEUDOGENES)==NO_CDS_AND_NO_PSEUDOGENES; // i.e. testing the exact combination?!?
     // i.e. if 'any' of the bit masks are active stop
     bool bitwise_stop = bitflag & PROBLEM; // PROBLEM = ~PROBLEM; //  bool bitwise_proceed = bitflag & PROBLEM;
 
     // if (genes==0||transcripts==0||exon_cds==0||no_cds_and_no_pseudogenes||bitwise_stop) {
-    if (no_cds_and_no_pseudogenes||bitwise_stop) return false;
+    if (bitwise_stop) return false;
+    // if (no_cds_and_no_pseudogenes||bitwise_stop) return false;
     else return true;
 }
 
