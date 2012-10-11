@@ -11,9 +11,9 @@
 
 ///y PRESUMABLY BINDING PRECENDENCE RESULTS IN THE EQUALITY TEST BEING APPLIED TO CERTAIN PARTS?!?!
 
-/////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!?
-/////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!?
-/////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!?
+/////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!? - presumably due to operator '==' having higher binding precendence that bitwise or '|'
+/////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!? - presumably due to operator '==' having higher binding precendence that bitwise or '|'
+/////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!? - presumably due to operator '==' having higher binding precendence that bitwise or '|'
 
 #include <iomanip> // manipulators
 #include "utils.h"
@@ -894,9 +894,7 @@ bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp
 
     cout << "summary : " << report ;
 
-/////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!?
-/////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!?
-/////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!?
+/////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!? - presumably due to operator '==' having higher binding precendence that bitwise or '|'
 
 /*  
 *
