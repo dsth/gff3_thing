@@ -1,10 +1,12 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <cassert>
 #include "boost/regex.hpp"
 #include <set>
 #include <algorithm>
 #include "exceptions.h"
+#include <bitset>
 // #include "boost/lambda/lambda.hpp"
 
 #include <iomanip> // manipulators
@@ -18,6 +20,23 @@
 
 #define MAX_ID_LENGTH 50
 
+#define STAMPIT(x) cout << #x << x << "\n";
+
+// !g++-4.5 -std=c++0x % -E | grep check_raw_consistency_tests
+// #define TESTIT(x) cout << "checking " << #x << "\n"; check_raw_consistency_tests (x, report);
+// TESTIT(OVERLAPPING_EXONS);
+// cout << "checking " << "OVERLAPPING_EXONS" << "\n"; check_raw_consistency_tests ((1<<29), report);;
+
+// #define TESTIT(x) cout << "checking " #x << "\n"; check_raw_consistency_tests (#x, report)==x
+// cout << "checking " << "OVERLAPPING_EXONS" << "\n"; check_raw_consistency_tests ((1<<29), report);;
+
+#define TESTIT(x,y) cout << "checking " #x << "\n"; assert(check_raw_consistency_tests (#x, report)==x|y)
+
+#define CHECKIT(x) cout << "\n> checking file " #x ".gff : \n"; bitflag = check_raw_consistency_tests (#x, report)
+
+unsigned long long check_raw_consistency_tests (const char*, std::string&);
+
+/// perhaps use unordered_map (transcripts) and unordered_multimap (cds/exon)?!? 
 
 ///r whether or not use this for multiple situations by allowing to run simply externally from cap will make doing/extending tests simpler?!?
 //
@@ -35,6 +54,7 @@ typedef unsigned char uchar;
 typedef boost::regex regex;
 typedef boost::smatch smatch;
 typedef feature_min feature;
+typedef unsigned long long ull;
 
 // must put back check for non-unique names?!?
 struct name_holder {
@@ -48,15 +68,15 @@ struct name_holder {
 // for header?!?
 class print_row {
 
-    long long bf;
-    long long bm;
+    unsigned long long bf;
+    unsigned long long bm;
     bool blah;
     std::string issue;
     std::string item;
 
   public:
 
-	print_row(std::string i, std::string a, long long _bf, long long _bm) : item(i), issue(a), bf(_bf), bm(_bm) {}
+	print_row(std::string i, std::string a, unsigned long long _bf, unsigned long long _bm) : item(i), issue(a), bf(_bf), bm(_bm) {}
 	print_row(std::string i, std::string a, bool b) : item(i), issue(a), blah(b) {}
 
 	friend std::ostream& operator<< (std::ostream& os, const print_row& bobj) {
@@ -187,14 +207,14 @@ static std::map<std::string,PERMITTED_BIOTYPES> biotype_resolver = {
 
 //// perhaps inline the individual checks?!?
 
-static long long PROBLEM = EXCESS_GENE_CONSISTENCY_PROB | EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB 
+static unsigned long long PROBLEM = EXCESS_GENE_CONSISTENCY_PROB | EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB 
     | EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB | EXCESS_CDS_EXON_CONSISTENCY_PROB | ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE 
     | PARENT_WITHOUT_ID_NOT_CDS_EXON | UNKNOWN_SCAFFOLD|NON_PERMITTED_BIOTYPES | NEGATIVE_COORDINATES 
     | NON_UNIQUE_ID | EMBL_FORMAT | GFF_FASTA_HEADER | FASTA_HEADER | PARTIAL_MODEL
     | NO_FEATLINES | NO_GENES | NO_EXON_CDS | NO_TRANSCRIPTS | TRANSCRIPT_LACKS_EXONS;
 
 // PROBLEM = ~PROBLEM;
-static long long NO_CDS_AND_NO_PSEUDOGENES = CDS_PRESENT | PSEUDOGENES_PRESENT;
+static unsigned long long NO_CDS_AND_NO_PSEUDOGENES = CDS_PRESENT | PSEUDOGENES_PRESENT;
 
 namespace gff {
 
@@ -209,7 +229,8 @@ namespace gff {
     static regex reg_blank      ("\\s*");
     static regex reg_carriageret         ("\\r");
 
-    static regex reg_feat       ("([^\\t]+)\\t[^\\t]+\\t([^\\t]+)\\t\\d+\\t\\d+\\t[^\\t]+\\t[+-]+\\t[^\\t]+\\t([^\\t]+)");
+    static regex reg_feat       ("([^\\t]+)\\t[^\\t]+\\t([^\\t]+)\\t\\d+\\t\\d+\\t[^\\t]+\\t[+-\\.]+\\t[^\\t]+\\t([^\\t]+)");
+    // static regex reg_feat       ("([^\\t]+)\\t[^\\t]+\\t([^\\t]+)\\t\\d+\\t\\d+\\t[^\\t]+\\t[+-]+\\t[^\\t]+\\t([^\\t]+)");
     static regex reg_negstart   ("([^\\t]+)\\t[^\\t]+\\t([^\\t]+)\\t-\\d+\\t\\d+\\t[^\\t]+\\t[^\\t]+\\t[^\\t]+\\t([^\\t]+)");
     static regex reg_negend     ("([^\\t]+)\\t[^\\t]+\\t([^\\t]+)\\t\\d+\\t-\\d+\\t[^\\t]+\\t[^\\t]+\\t[^\\t]+\\t([^\\t]+)");
 
@@ -259,13 +280,13 @@ struct gff_holder {
 
 namespace details {
 
-long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringstream& strstrm, name_holder& nh, gff_holder& gh) {
+unsigned long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringstream& strstrm, name_holder& nh, gff_holder& gh) {
 // long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringstream& strstrm, name_holder& nh, gff_holder& gh, DB_PARAMS* dbp = 0) {
 
-    cout << "\n[1a] parsing\n";
+    // cout << "\n[1a] parsing\n";
 
     // perhaps make this static?! - nah?!?
-    long long bitflag = NO_FEATLINES|NO_GENES|NO_EXON_CDS|NO_TRANSCRIPTS;
+    unsigned long long bitflag = NO_FEATLINES|NO_GENES|NO_EXON_CDS|NO_TRANSCRIPTS;
 
     smatch match_obj;
     smatch match_obj2;
@@ -282,7 +303,7 @@ long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringst
         
     std::string s;
     unsigned char error_counter = 0;
-    long long ln = 0;
+    unsigned long long ln = 0;
 
     while(getline(in, s)) { // Discards newline char
 
@@ -351,7 +372,7 @@ long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringst
                 int spaces = count(s.begin(),s.end(),' ');
 
                 if(tabs==8 && spaces < 7) // if(tabs==8) {
-                strstrm << "- start & end must be numeric and strand must conform to '+' or '-'";
+                strstrm << "- start & end must be numeric and strand must conform to '+', '-' or '.'";
                 else if (tabs > 5 && tabs < 11) // put in check on number of spaces?!?
                 strstrm << "- please check all 9 columns are present";
                 else if (spaces > 7 && spaces < 9 && tabs < 3) // tabs check?!?
@@ -373,6 +394,8 @@ long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringst
 //fend
 
 /// 2 : we have a feature
+
+        // at this stage we prolly ought to check that strand is overtly +/-?!?
 
 //fstart //y really not worth hassle of parsing col9 without regex?!?
 
@@ -433,12 +456,10 @@ long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringst
                     strstrm << "<p>ID tags must be unique : i've seen the ID '"<<id<<"' before (at transcript/gene level no less!)</p>\n";
                 }
 
-///r risky?!?                if(biotype_resolver.find(type)==biotype_resolver.end()) throw std::runtime_error("oh dear caused a bug?!?!");
-                // instead of grabbing iterator and checking if 1-past-the-end could do a count check!?!
-                // if(biotype_resolver.count(type)==0) throw std::runtime_error("oh dear caused a bug?!?!");
+                assert(biotype_resolver.find(type)!=biotype_resolver.end());
+                // assert(biotype_resolver.count(type)!=0);
 
                 // PERMITTED_BIOTYPES benum = biotype_resolver.find(type)->second;
-                //
                 // gh.mrna_coords.insert(std::pair<std::string,feature_ext>(id,feature_ext(parent,start,end,strand=="+"?1:0))); 
                 // gh.mrna_coords.insert(std::pair<std::string,feature_ext>(id,feature_ext(parent,start,end,strand=="+"?1:0,benum))); 
                 gh.mrna_coords.insert(std::pair<std::string,feature_ext>(id,feature_ext(parent,start,end,strand=="+"?1:0,biotype_resolver.find(type)->second))); 
@@ -517,11 +538,11 @@ long long gff_basic_validation_1a_gff_parse (const char* filename, std::stringst
 
 }
 
-long long gff_basic_validation_1b_gff_name_checks (long long bitflag, std::stringstream& strstrm, name_holder& nh, gff_holder& gh) {
+unsigned long long gff_basic_validation_1b_gff_name_checks (unsigned long long bitflag, std::stringstream& strstrm, name_holder& nh, gff_holder& gh) {
 
 ///y simple checks for feature id/parent names...
 
-cout << "\n[1b] doing id/parent name checks!??!\n";
+    // cout << "\n[1b] doing id/parent name checks!??!\n";
 
     // should truncate messages here?!? - i.e. just have an externally scoped counter passed by reference?!?
     // error_counter = 0;
@@ -588,9 +609,9 @@ cout << "\n[1b] doing id/parent name checks!??!\n";
 }
 
 // fragmentation - really just a check for models that have been positionally extracted without checking for gene boundaries?!?
-long long gff_basic_validation_1d_individual_model_checks (long long bitflag, std::stringstream& strstrm, gff_holder& gh) {
+unsigned long long gff_basic_validation_1d_individual_model_checks (unsigned long long bitflag, std::stringstream& strstrm, gff_holder& gh) {
 
-    cout << "\n[1b] individual model checks!??!\n";
+    // cout << "\n[1b] individual model checks!??!\n";
 
 ///y fragmneted model check, overlapping exons, non-mapping cds?!? - clearly have a way to by-pass last two due to time-complexities etc.?!?
 
@@ -698,13 +719,13 @@ long long gff_basic_validation_1d_individual_model_checks (long long bitflag, st
 
 }
 
-long long gff_basic_validation_1c_scfnames (long long bitflag, std::stringstream& strstrm, name_holder& nh, DB_PARAMS* dbp) {
+unsigned long long gff_basic_validation_1c_scfnames (unsigned long long bitflag, std::stringstream& strstrm, name_holder& nh, DB_PARAMS* dbp) {
 
 ///y scaffold names - needs to be converted to use mysql adaptor?!? - do once integrating into capmon?!? - changes must be only local additions
 
 #ifdef CAPMON_EXT
 
-cout << "\n[1c] scaffold name checks\n";
+    // cout << "\n[1c] scaffold name checks\n";
 
 //fstart 
 
@@ -762,7 +783,7 @@ cout << "\n[1c] scaffold name checks\n";
 
 #else
 
-cout << "\n[1c] MUST compile with CAPMON_EXT for scaffold name checks aagainst mysql/e! db instance\n";
+    cout << "\n[1c] MUST compile with CAPMON_EXT for scaffold name checks aagainst mysql/e! db instance\n";
 
 #endif
 
@@ -770,7 +791,7 @@ cout << "\n[1c] MUST compile with CAPMON_EXT for scaffold name checks aagainst m
 
 }
 
-void gff_basic_validation_1x_file_cleanup (long long bitflag,const char* filename,std::stringstream& strstrm) {
+void gff_basic_validation_1x_file_cleanup (unsigned long long bitflag,const char* filename,std::stringstream& strstrm) {
 
 ///y local copy cleanup?!?
 
@@ -822,19 +843,101 @@ void gff_basic_validation_1x_file_cleanup (long long bitflag,const char* filenam
 
 }
 
-long long generic_validation_and_store (const char* filename, std::string& report, DB_PARAMS* dbp = 0) {
+unsigned long long generic_validation_and_store (const char* filename, std::string& report, DB_PARAMS* dbp = 0) {
     gff_holder gd; // if scaffold names with fasta perhaps put that in else directive with mysql stuff?!?
     // could call gff_basic_validation_1a_gff_parse then perhaps even do fasta checks?!?
     // should the mysql stuff go into it's own function - i.e. that has empty body without inclusion?!?
 }
 
+    // can either new up the arrays for each, but since it's a set of char* might as well just leave it as statically allocated string literals?!?
+    // STAMPIT(error_types[3]);
+    // STAMPIT(OVERLAPPING_EXONS);
+    // TESTIT(OVERLAPPING_EXONS,CDS_PRESENT);
+    // long long int = bitflag check_raw_consistency_tests ("OVERLAPPING_EXONS", report)
+    // unsigned long long bitflag = check_raw_consistency_tests ("FINE", report);
+    // cout << "\n\n";
+    // unsigned long long bitflag = check_raw_consistency_tests ("OVERLAPPING_EXONS", report);
+    //     cout << "bitflag = " << std::bitset<sizeof(long long)*8>(bitflag) << " = " << std::hex << bitflag << "\n";
+    // for (long long i = 0x800000 ; ...
+
+//r DUH!?!? (1<<i) is likely a 4 word numeric literal of type signed int default - otherwise get wrap around 
+//r use LL or ULL : cout << "value=" << 0xffull << "\n";
+
 bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp = 0) {
 // bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp) {
 
-    cout << "\n\n\n*** this is where we put tests for EVERY bitflag test!?!?! ***\n\n\n";
+
+    ///y have bit flag test AND bool capmon type return test?!?
+
+    ull bitflag;
+    // CHECKIT(OVERLAPPING_EXONS);
+    CHECKIT(FINE);
+    for (int i = 0 ; i < sizeof(long long)*8 ; i++) if (int x = bitflag&(1ull<<i)) cout << " Active bit " << std::dec << i << "\n"; //  << " and " << x << "\n";
+
+
+
+
+
+
+    assert(check_raw_consistency_tests ("FINE",report)==CDS_PRESENT);
+    assert(check_raw_consistency_tests ("OVERLAPPING_EXONS",report)==OVERLAPPING_EXONS|CDS_PRESENT);
+
+    // assert(check_raw_consistency_tests ("",report)== |CDS_PRESENT);
+    assert(check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)==NAMES_HAVE_SPACES|CDS_PRESENT);
+
+
+
+
+    cout << "\nTESTS ARE FINE!?!?!\n";
+
+
+
+
+    // cout << "checking " "OVERLAPPING_EXONS" << "\n"; ((check_raw_consistency_tests ("OVERLAPPING_EXONS", report)==(1<<29)) ? static_cast<void> (0) : __assert_fail ("check_raw_consistency_tests (\"OVERLAPPING_EXONS\", report)==(1<<29)", "gff_validation.cpp", 888, __PRETTY_FUNCTION__));
+
+
+    return true;
+
+    const char* error_types[] = { 
+        "APOLLO_SCF_NAMES",
+        "NAMES_HAVE_SPACES",
+        "LINES_WO_9COLS",
+        "LINE_ENDINGS",
+        "ILEGAL_FEAT_TYPES",
+        "EXCESS_GENE_CONSISTENCY_PROB",
+        "EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB",
+        "EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB",
+        "EXCESS_CDS_EXON_CONSISTENCY_PROB",
+        "NON_PERMITTED_BIOTYPES",
+        "ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE",
+        "PARENT_WITHOUT_ID_NOT_CDS_EXON",
+        "UNKNOWN_SCAFFOLD",
+        "NEGATIVE_COORDINATES",
+        "NON_PRINTING_X0D",
+        "BLANK_LINES",
+        "NON_UNIQUE_ID",
+        "PSEUDOGENES_PRESENT",
+        "CDS_PRESENT",
+        "EMBL_FORMAT",
+        "GFF_FASTA_HEADER",
+        "FASTA_HEADER",
+        "PARTIAL_MODEL",
+        "NO_FEATLINES",
+        "NO_GENES",
+        "NO_EXON_CDS",
+        "NO_TRANSCRIPTS",
+        "TRANSCRIPT_LACKS_EXONS",
+        "PROTEIN_CODING_LACKS_CDS",
+        "OVERLAPPING_EXONS"
+    };
+
+    for (int i = 0 ; i < sizeof(error_types) / sizeof(char*) ; i++) cout << "type = "<<*(error_types+i)<< " = " << error_types[i] << "\n";// ...
+    for (const char** it = error_types ; it < error_types+(sizeof(error_types)/sizeof(char*)) ; it++) cout << "running test for " << *it << " with file\n";
+
+
 }
 
-std::string capmon_html_table(long long bitflag,std::stringstream& strstrm) {
+std::string capmon_html_table(unsigned long long bitflag,std::stringstream& strstrm) {
 
     std::stringstream strstrm2(std::stringstream::out);
 
@@ -908,6 +1011,21 @@ std::string capmon_html_table(long long bitflag,std::stringstream& strstrm) {
 
 }
 
+unsigned long long check_raw_consistency_tests (const char* filename, std::string& report) {
+
+    std::string file(filename);
+    file = "./testfiles/" + file + ".gff";
+    gff_holder dummy; // just let it go out of scope?!?
+    std::stringstream strstrm(std::stringstream::out);
+    unsigned long long bitflag = 0;
+    name_holder nh;
+    bitflag = details::gff_basic_validation_1a_gff_parse (file.c_str(), strstrm, nh, dummy);
+    bitflag = details::gff_basic_validation_1b_gff_name_checks (bitflag, strstrm, nh, dummy);
+    // bitflag = details::gff_basic_validation_1c_scfnames (bitflag, strstrm, nh, dbp);
+    bitflag = details::gff_basic_validation_1d_individual_model_checks(bitflag, strstrm, dummy);
+    report = strstrm.str();
+    return bitflag;
+}
 // namespace xxx { void foo() { cout << "BLAH\n"; } }
 
 // have summary separate so have single routine that returns bitflag and data structure that capmon calls - use it for test all flags against appropriate files?!?
@@ -919,7 +1037,7 @@ bool capmon_gff_validation (const char* filename, std::string& report, DB_PARAMS
 
     std::stringstream strstrm(std::stringstream::out);
 
-    long long bitflag = 0;
+    unsigned long long bitflag = 0;
 
 { // just avoiding persistance of name_holder for no reason?!?
 
@@ -961,6 +1079,7 @@ bool capmon_gff_validation (const char* filename, std::string& report, DB_PARAMS
 // i.e. exactly same as testing for a single bit?!? - BUT THAT IS FOR TESTING THEM ALL AT ONCE!?!?
 //       |(!cds_PRESENT&&!PSEUDOGENES_PRESENT)
     
+
     ///r will return the bitflag at this point - then interogate it in caller?!?
 
     bool no_cds_and_no_pseudogenes = (bitflag & NO_CDS_AND_NO_PSEUDOGENES)==NO_CDS_AND_NO_PSEUDOGENES; // i.e. testing the exact combination?!?
