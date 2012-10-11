@@ -125,20 +125,25 @@ class print_row {
 
 std::ostream & nl(std::ostream& os) { return os << " \\\n"; } // nullary maninulator - should probably use an effector with arg...
 
-#define PERMITTED_TRANSCRIPT_TYPES_REGEX    "mRNA|tRNA|pseudogenic_tRNA|rRNA|miRNA|ncRNA|pseudogene"
-enum PERMITTED_BIOTYPES                    { mRNA,tRNA,pseudogenic_tRNA,rRNA,miRNA,ncRNA,pseudogene };
+///y have blocked pseudogenes at the transcript level!??
+
+// #define PERMITTED_TRANSCRIPT_TYPES_REGEX    "mRNA|tRNA|pseudogenic_tRNA|rRNA|miRNA|ncRNA|pseudogene"
+// enum PERMITTED_BIOTYPES                    { mRNA,tRNA,pseudogenic_tRNA,rRNA,miRNA,ncRNA,pseudogene };
+#define PERMITTED_TRANSCRIPT_TYPES_REGEX    "mRNA|tRNA|pseudogenic_tRNA|rRNA|miRNA|ncRNA"
+enum PERMITTED_BIOTYPES                    { mRNA,tRNA,pseudogenic_tRNA,rRNA,miRNA,ncRNA };
 // should use template/preprocessor to stamp this out?!?
 static std::map<std::string,PERMITTED_BIOTYPES> biotype_resolver = { 
     std::make_pair("mRNA",mRNA),
     std::make_pair("pseudogenic_tRNA",pseudogenic_tRNA),
     std::make_pair("rRNA",rRNA),
     std::make_pair("miRNA",miRNA),
-    std::make_pair("ncRNA",ncRNA),
-    std::make_pair("pseudogene",pseudogene) 
+    std::make_pair("ncRNA",ncRNA)
+    // std::make_pair("pseudogene",pseudogene) 
 };
 
 #define IGNORE_TYPES_REGEX                  "contig|supercontig|match|match_part"
-#define CORE_PERMITTED                      "gene|exon|CDS|"
+#define CORE_PERMITTED                      "gene|pseudogene|exon|CDS|"
+// #define CORE_PERMITTED                      "gene|exon|CDS|"
 #define ALL_PERMITTED                       CORE_PERMITTED PERMITTED_TRANSCRIPT_TYPES_REGEX
 #define MAX_BAD_LINES 5
 
@@ -476,7 +481,7 @@ unsigned long long gff_basic_validation_1a_gff_parse (const char* filename, std:
 
             } else {
                 bitflag |= NON_PERMITTED_BIOTYPES;
-                strstrm << "<p>Not accepting biotype " << type << " at transcript level</p>\n";
+                strstrm << "<p>Not accepting biotype '" << type << "' at transcript level</p>\n";
             }
 
 //fend
@@ -642,7 +647,7 @@ unsigned long long gff_basic_validation_1d_individual_model_checks (unsigned lon
 
         switch (count) {
 
-            case 0: std::cout << "move the book-keeping stuff to here?!?"<<std::endl; 
+            case 0: 
                 bitflag |= TRANSCRIPT_LACKS_EXONS;
                 strstrm << "<p>Transcript "<< it->first << " has no exons!</p>\n";
             break;
@@ -887,31 +892,31 @@ bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp
 
     unsignedll bitflag=0;
 
-    bitflag = check_raw_consistency_tests("NO_FEATLINES",report);
-    cout << "return value =\n\t" << std::bitset<sizeof(long long)*8>(bitflag) << "\n";
-    for (int i = 0 ; i < sizeof(long long)*8 ; i++) if (int x = bitflag&(1ull<<i)) cout << " Active bit from return " << std::dec << i << "\n"; //  << " and " << x << "\n";
-    cout << "\n";
-
-    cout << "summary : " << report ;
+//    bitflag = check_raw_consistency_tests("NO_FEATLINES",report);
+//    cout << "return value =\n\t" << std::bitset<sizeof(long long)*8>(bitflag) << "\n";
+//    for (int i = 0 ; i < sizeof(long long)*8 ; i++) if (int x = bitflag&(1ull<<i)) cout << " Active bit from return " << std::dec << i << "\n"; //  << " and " << x << "\n";
+//    cout << "\n";
+//    cout << "summary : " << report ;
 
 /////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!? - presumably due to operator '==' having higher binding precendence that bitwise or '|'
 
+
+    bitflag = check_raw_consistency_tests("FINE",report);
+    cout << "return value =\n\t" << std::bitset<sizeof(long long)*8>(bitflag) << "\n";
+    for (int i = 0 ; i < sizeof(long long)*8 ; i++) if (int x = bitflag&(1ull<<i)) cout << " Active bit from return " << std::dec << i << "\n"; //  << " and " << x << "\n";
+    cout << "\nsummary : " << report ;
+
+
 /*  
 *
-// #define EXCESS_GENE_CONSISTENCY_PROB                (1ull<<5)
 // #define EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB      (1ull<<6)
-// #define EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB  (1ull<<7)
 // #define EXCESS_CDS_EXON_CONSISTENCY_PROB            (1ull<<8)
 // #define PARENT_WITHOUT_ID_NOT_CDS_EXON              (1ull<<11)
 // #define NON_PRINTING_X0D                            (1ull<<14)
-// #define NO_EXON_CDS                                 (1ull<<25)
 // #define NO_TRANSCRIPTS                              (1ull<<26)
 // #define TRANSCRIPT_LACKS_EXONS                      (1ull<<27)
 // #define PROTEIN_CODING_LACKS_CDS                    (1ull<<28)
-// #define PSEUDOGENES_PRESENT                         (1ull<<17)
-//
     problems?!?
-
 // #define NAMES_HAVE_SPACES                           (1ull<<1)
 // #define UNKNOWN_SCAFFOLD                            (1ull<<12)
 *  */
@@ -965,11 +970,17 @@ bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp
 
     assert( check_raw_consistency_tests("NO_FEATLINES",report) == (NO_FEATLINES|LINES_WO_9COLS|NO_GENES|NO_CDS|NO_EXON_CDS|NO_TRANSCRIPTS) );
 
+    assert( check_raw_consistency_tests("PSEUDOGENES_PRESENT",report) == PSEUDOGENES_PRESENT );
+    // this isn't actually a pseudogene example...!??
+    assert( check_raw_consistency_tests("PSEUDOGENES_PRESENT_2TRANSCRIPT",report) == (NON_PERMITTED_BIOTYPES|EXCESS_CDS_EXON_CONSISTENCY_PROB) );
+
+    assert( check_raw_consistency_tests("EXCESS_GENE_CONSISTENCY_PROB",report) == EXCESS_GENE_CONSISTENCY_PROB );
+
+    assert( check_raw_consistency_tests("EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB",report) == (EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB|TRANSCRIPT_LACKS_EXONS|PROTEIN_CODING_LACKS_CDS) );
+
+    assert( check_raw_consistency_tests("NO_EXON_CDS",report) == (NO_EXON_CDS|NO_CDS|TRANSCRIPT_LACKS_EXONS|PROTEIN_CODING_LACKS_CDS|EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB) );
     // assert( check_raw_consistency_tests("LINES_WO_9COLS",report) == (LINES_WO_9COLS|CDS_PRESENT) );
     // assert( check_raw_consistency_tests("OVERLAPPING_EXONS",report) == (OVERLAPPING_EXONS|CDS_PRESENT) );
-
-
-
 
 
     cout << "\nTESTS ARE FINE!?!?!\n";
