@@ -54,7 +54,7 @@ typedef unsigned char uchar;
 typedef boost::regex regex;
 typedef boost::smatch smatch;
 typedef feature_min feature;
-typedef unsigned long long ull;
+typedef unsigned long long unsignedll;
 
 // must put back check for non-unique names?!?
 struct name_holder {
@@ -164,46 +164,46 @@ static std::map<std::string,PERMITTED_BIOTYPES> biotype_resolver = {
 /// so these below are a sort of val1a set, then fragmentation/exon-overlap require features so more of val1b?!?
 
 // should prolly use const int?!?
-#define APOLLO_SCF_NAMES                            (1<<0) // (0x1<<0) 0x1
-#define NAMES_HAVE_SPACES                           (1<<1)
-#define LINES_WO_9COLS                              (1<<2)
-#define LINE_ENDINGS                                (1<<3)
-#define ILEGAL_FEAT_TYPES                           (1<<4)
+#define APOLLO_SCF_NAMES                            (1ull<<0) // (0x1<<0) 0x1
+#define NAMES_HAVE_SPACES                           (1ull<<1)
+#define LINES_WO_9COLS                              (1ull<<2)
+#define LINE_ENDINGS                                (1ull<<3)
+#define ILEGAL_FEAT_TYPES                           (1ull<<4)
 
-#define EXCESS_GENE_CONSISTENCY_PROB                (1<<5)
-#define EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB      (1<<6)
-#define EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB  (1<<7)
-#define EXCESS_CDS_EXON_CONSISTENCY_PROB            (1<<8)
-#define NON_PERMITTED_BIOTYPES                      (1<<9)
-#define ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE       (1<<10)
-#define PARENT_WITHOUT_ID_NOT_CDS_EXON              (1<<11)
+#define EXCESS_GENE_CONSISTENCY_PROB                (1ull<<5)
+#define EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB      (1ull<<6)
+#define EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB  (1ull<<7)
+#define EXCESS_CDS_EXON_CONSISTENCY_PROB            (1ull<<8)
+#define NON_PERMITTED_BIOTYPES                      (1ull<<9)
+#define ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE       (1ull<<10)
+#define PARENT_WITHOUT_ID_NOT_CDS_EXON              (1ull<<11)
 
-#define UNKNOWN_SCAFFOLD                            (1<<12)
+#define UNKNOWN_SCAFFOLD                            (1ull<<12)
 
-#define NEGATIVE_COORDINATES                        (1<<13)
-#define NON_PRINTING_X0D                            (1<<14)
-#define BLANK_LINES                                 (1<<15)
+#define NEGATIVE_COORDINATES                        (1ull<<13)
+#define NON_PRINTING_X0D                            (1ull<<14)
+#define BLANK_LINES                                 (1ull<<15)
 
-#define NON_UNIQUE_ID                               (1<<16)
+#define NON_UNIQUE_ID                               (1ull<<16)
 
 // no_CDS_without_pseudogene = false; // only processing protein coding via cap
-#define PSEUDOGENES_PRESENT                         (1<<17)
-#define CDS_PRESENT                                 (1<<18)
+#define PSEUDOGENES_PRESENT                         (1ull<<17)
+#define CDS_PRESENT                                 (1ull<<18)
 
-#define EMBL_FORMAT                                 (1<<19)
-#define GFF_FASTA_HEADER                            (1<<20)
-#define FASTA_HEADER                                (1<<21)
+#define EMBL_FORMAT                                 (1ull<<19)
+#define GFF_FASTA_HEADER                            (1ull<<20)
+#define FASTA_HEADER                                (1ull<<21)
 
-#define PARTIAL_MODEL                               (1<<22)
+#define PARTIAL_MODEL                               (1ull<<22)
 
-#define NO_FEATLINES                                (1<<23)
-#define NO_GENES                                    (1<<24)
-#define NO_EXON_CDS                                 (1<<25)
-#define NO_TRANSCRIPTS                              (1<<26)
+#define NO_FEATLINES                                (1ull<<23)
+#define NO_GENES                                    (1ull<<24)
+#define NO_EXON_CDS                                 (1ull<<25)
+#define NO_TRANSCRIPTS                              (1ull<<26)
 
-#define TRANSCRIPT_LACKS_EXONS                      (1<<27)
-#define PROTEIN_CODING_LACKS_CDS                    (1<<28)
-#define OVERLAPPING_EXONS                           (1<<29)
+#define TRANSCRIPT_LACKS_EXONS                      (1ull<<27)
+#define PROTEIN_CODING_LACKS_CDS                    (1ull<<28)
+#define OVERLAPPING_EXONS                           (1ull<<29)
 
 //// perhaps inline the individual checks?!?
 
@@ -869,21 +869,51 @@ bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp
 
     ///y have bit flag test AND bool capmon type return test?!?
 
-    ull bitflag;
+    unsignedll bitflag;
     // CHECKIT(OVERLAPPING_EXONS);
-    CHECKIT(FINE);
+    CHECKIT(NAMES_HAVE_SPACES);
+    cout << std::bitset<sizeof(long long)*8>(bitflag) << "\n";
     for (int i = 0 ; i < sizeof(long long)*8 ; i++) if (int x = bitflag&(1ull<<i)) cout << " Active bit " << std::dec << i << "\n"; //  << " and " << x << "\n";
+    cout << "\n";
 
 
+        unsignedll x = NAMES_HAVE_SPACES|CDS_PRESENT;
+        unsignedll y = check_raw_consistency_tests ("NAMES_HAVE_SPACES",report);
+
+        /// it is somehting to do with using temporaries?!?
+
+        cout << std::bitset<sizeof(long long)*8>(x) << "\n";
+        cout << std::bitset<sizeof(long long)*8>(y) << "\n";
+
+    if(NAMES_HAVE_SPACES|CDS_PRESENT==check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)) {
+    // if(check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)==NAMES_HAVE_SPACES|CDS_PRESENT) {
+
+        cout << "they are identical - but they shouldn't be!?!\n";
 
 
+        cout << std::bitset<sizeof(long long)*8>(NAMES_HAVE_SPACES|CDS_PRESENT) << "\n";
+        cout << std::bitset<sizeof(long long)*8>(check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)) << "\n";
+
+    } else {
+
+        cout << "they are different\n";
+
+    }
+
+    if (x==y) { 
+        cout <<"x is equal to y\n"; 
+    } else { 
+        cout << "NOPE\n";
+    }
 
 
     assert(check_raw_consistency_tests ("FINE",report)==CDS_PRESENT);
-    assert(check_raw_consistency_tests ("OVERLAPPING_EXONS",report)==OVERLAPPING_EXONS|CDS_PRESENT);
+    assert(check_raw_consistency_tests ("OVERLAPPING_EXONS",report)==OVERLAPPING_EXONS|CDS_PRESENT|NAMES_HAVE_SPACES);
 
     // assert(check_raw_consistency_tests ("",report)== |CDS_PRESENT);
     assert(check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)==NAMES_HAVE_SPACES|CDS_PRESENT);
+
+    cout << std::bitset<sizeof(long long)*8>(check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)) << "\n";
 
 
 
@@ -1011,13 +1041,14 @@ std::string capmon_html_table(unsigned long long bitflag,std::stringstream& strs
 
 }
 
-unsigned long long check_raw_consistency_tests (const char* filename, std::string& report) {
+unsignedll check_raw_consistency_tests (const char* filename, std::string& report) {
 
     std::string file(filename);
     file = "./testfiles/" + file + ".gff";
+    cout << "using file " << file << "\n";
     gff_holder dummy; // just let it go out of scope?!?
     std::stringstream strstrm(std::stringstream::out);
-    unsigned long long bitflag = 0;
+    unsignedll bitflag = 0;
     name_holder nh;
     bitflag = details::gff_basic_validation_1a_gff_parse (file.c_str(), strstrm, nh, dummy);
     bitflag = details::gff_basic_validation_1b_gff_name_checks (bitflag, strstrm, nh, dummy);
@@ -1095,17 +1126,15 @@ int main () {
 
     // have a validation level - low stringency only does 1a
     // higher stringency does the actual model checks?!?
-
-    cout << "gonna check file = ";
     std::string summary;
-
-    //// now we start putting in a test function?!?
     details::validation_tests("Yb.gff3",summary);
 
+    return 0;
     // cout << " " << std::boolalpha << capmon_gff_validation("exonprob.gff",summary)<<"\n\n";
     cout << " " << std::boolalpha << capmon_gff_validation("Yb.gff3",summary)<<"\n\n";
 
-    cout << summary;
+
+
 
     //     return 0;
     // cout << " " << std::boolalpha << gff_basic_validation_1a_gff_parse("../gff/Yb_superscaffold_v1-0.gff3",summary)<<"\n\n";
