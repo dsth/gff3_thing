@@ -901,20 +901,19 @@ bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp
 /////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!? - presumably due to operator '==' having higher binding precendence that bitwise or '|'
 
 
-    bitflag = check_raw_consistency_tests("NO_TRANSCRIPTS",report);
+    bitflag = check_raw_consistency_tests("TRANSCRIPT_LACKS_EXONS",report);
     cout << "return value =\n\t" << std::bitset<sizeof(long long)*8>(bitflag) << "\n";
     for (int i = 0 ; i < sizeof(long long)*8 ; i++) if (int x = bitflag&(1ull<<i)) cout << " Active bit from return " << std::dec << i << "\n"; //  << " and " << x << "\n";
     cout << "\nsummary : " << report ;
 
-    assert( check_raw_consistency_tests("NO_TRANSCRIPTS",report) == NO_TRANSCRIPTS );
+    bitflag = check_raw_consistency_tests("PROTEIN_CODING_LACKS_CDS",report);
+    cout << "return value =\n\t" << std::bitset<sizeof(long long)*8>(bitflag) << "\n";
+    for (int i = 0 ; i < sizeof(long long)*8 ; i++) if (int x = bitflag&(1ull<<i)) cout << " Active bit from return " << std::dec << i << "\n"; //  << " and " << x << "\n";
+    cout << "\nsummary : " << report ;
 
 /*  
 *
-// #define EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB      (1ull<<6)
-// #define EXCESS_CDS_EXON_CONSISTENCY_PROB            (1ull<<8)
-// #define PARENT_WITHOUT_ID_NOT_CDS_EXON              (1ull<<11)
 // #define NON_PRINTING_X0D                            (1ull<<14)
-// #define NO_TRANSCRIPTS                              (1ull<<26)
 // #define TRANSCRIPT_LACKS_EXONS                      (1ull<<27)
 // #define PROTEIN_CODING_LACKS_CDS                    (1ull<<28)
     problems?!?
@@ -980,6 +979,23 @@ bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp
     assert( check_raw_consistency_tests("EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB",report) == (EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB|TRANSCRIPT_LACKS_EXONS|PROTEIN_CODING_LACKS_CDS) );
 
     assert( check_raw_consistency_tests("NO_EXON_CDS",report) == (NO_EXON_CDS|NO_CDS|TRANSCRIPT_LACKS_EXONS|PROTEIN_CODING_LACKS_CDS|EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB) );
+
+    assert( check_raw_consistency_tests("EXCESS_GENE_CONSISTENCY_PROB_2NOPROTEINCODING",report) == (EXCESS_GENE_CONSISTENCY_PROB|EXCESS_CDS_EXON_CONSISTENCY_PROB) );
+
+    assert( check_raw_consistency_tests("NO_TRANSCRIPTS",report) == (NO_TRANSCRIPTS|EXCESS_GENE_CONSISTENCY_PROB|EXCESS_CDS_EXON_CONSISTENCY_PROB) );
+
+    assert( check_raw_consistency_tests("PARENT_WITHOUT_ID_NOT_CDS_EXON",report) == (PARENT_WITHOUT_ID_NOT_CDS_EXON|EXCESS_CDS_EXON_CONSISTENCY_PROB) );
+    assert( check_raw_consistency_tests("PARENT_WITHOUT_ID_NOT_CDS_EXON_2MISNAMEDCDS",report) == (PARENT_WITHOUT_ID_NOT_CDS_EXON|NON_PERMITTED_BIOTYPES) );
+
+    assert( check_raw_consistency_tests("EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB",report) == EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB );
+
+    assert( check_raw_consistency_tests("TRANSCRIPT_LACKS_EXONS",report) == TRANSCRIPT_LACKS_EXONS );
+
+    assert( check_raw_consistency_tests("PROTEIN_CODING_LACKS_CDS",report) == PROTEIN_CODING_LACKS_CDS );
+
+    if(system("cp testfiles/NON_PRINTING_X0D.gff_ORIG testfiles/NON_PRINTING_X0D.gff")!=0) throw runtime_error("couldn't copy file!?!");
+    assert( check_raw_consistency_tests("NON_PRINTING_X0D",report) == (LINE_ENDINGS|NON_PRINTING_X0D) );
+
     // assert( check_raw_consistency_tests("LINES_WO_9COLS",report) == (LINES_WO_9COLS|CDS_PRESENT) );
     // assert( check_raw_consistency_tests("OVERLAPPING_EXONS",report) == (OVERLAPPING_EXONS|CDS_PRESENT) );
 
