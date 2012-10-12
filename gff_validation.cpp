@@ -249,6 +249,8 @@ namespace gff {
     static regex reg_scfname    ("(\\w+?\\d+?):\\d+?[:-]\\d+?");
     static regex reg_id         ("ID=([^;]+)");
     static regex reg_parent     ("Parent=([^;]+)");
+    //static regex reg_id         ("ID=([\\S ]+);");
+    //static regex reg_parent     ("Parent=([\\S ]+);");
 
     static regex reg_ignore_types(IGNORE_TYPES_REGEX);
     static regex reg_allow_types(ALL_PERMITTED);
@@ -416,9 +418,12 @@ unsigned long long gff_basic_validation_1a_gff_parse (const char* filename, std:
         std::stringstream featurestrm(s); // lazy but we know it adheres to correct format so can't be bothered matching?!?
         std::string scfname, score, strand, source, type, ignore, annot;
         int start = 0, end = 0; // wtf?!? - wasn't initialised?!?!
-        featurestrm >> scfname >> source >> type >> start >> end >> score >> strand >> ignore >> annot;
 
-        // std::string annot; if (match_obj[3].matched) annot = match_obj[3]; ///////// what the bollocks is this?!? wtf - why match too?!?
+        // hmm,. this breaks space detection in id/parent?!?
+        // featurestrm >> scfname >> source >> type >> start >> end >> score >> strand >> ignore >> annot;
+        featurestrm >> scfname >> source >> type >> start >> end >> score >> strand >> ignore;
+        // annot; if (match_obj[3].matched) annot = match_obj[3]; // condional after regex?!?
+        annot = match_obj[3]; 
 
         if (regex_match(type,gff::reg_ignore_types)) continue; // ignore contigs etc.
 
@@ -901,25 +906,11 @@ bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp
 /////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!? - presumably due to operator '==' having higher binding precendence that bitwise or '|'
 
 
-    bitflag = check_raw_consistency_tests("TRANSCRIPT_LACKS_EXONS",report);
-    cout << "return value =\n\t" << std::bitset<sizeof(long long)*8>(bitflag) << "\n";
-    for (int i = 0 ; i < sizeof(long long)*8 ; i++) if (int x = bitflag&(1ull<<i)) cout << " Active bit from return " << std::dec << i << "\n"; //  << " and " << x << "\n";
-    cout << "\nsummary : " << report ;
+    // bitflag = check_raw_consistency_tests("NAMES_HAVE_SPACES",report);
+    // cout << "return value =\n\t" << std::bitset<sizeof(long long)*8>(bitflag) << "\n";
+    // for (int i = 0 ; i < sizeof(long long)*8 ; i++) if (int x = bitflag&(1ull<<i)) cout << " Active bit from return " << std::dec << i << "\n"; //  << " and " << x << "\n";
 
-    bitflag = check_raw_consistency_tests("PROTEIN_CODING_LACKS_CDS",report);
-    cout << "return value =\n\t" << std::bitset<sizeof(long long)*8>(bitflag) << "\n";
-    for (int i = 0 ; i < sizeof(long long)*8 ; i++) if (int x = bitflag&(1ull<<i)) cout << " Active bit from return " << std::dec << i << "\n"; //  << " and " << x << "\n";
-    cout << "\nsummary : " << report ;
-
-/*  
-*
-// #define NON_PRINTING_X0D                            (1ull<<14)
-// #define TRANSCRIPT_LACKS_EXONS                      (1ull<<27)
-// #define PROTEIN_CODING_LACKS_CDS                    (1ull<<28)
-    problems?!?
-// #define NAMES_HAVE_SPACES                           (1ull<<1)
-// #define UNKNOWN_SCAFFOLD                            (1ull<<12)
-*  */
+    /*  problems?!? - put in conditional test?!?  #define UNKNOWN_SCAFFOLD                            (1ull<<12)  */
 
     assert( check_raw_consistency_tests("FINE",report) == 0);
 
@@ -995,6 +986,8 @@ bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp
 
     if(system("cp testfiles/NON_PRINTING_X0D.gff_ORIG testfiles/NON_PRINTING_X0D.gff")!=0) throw runtime_error("couldn't copy file!?!");
     assert( check_raw_consistency_tests("NON_PRINTING_X0D",report) == (LINE_ENDINGS|NON_PRINTING_X0D) );
+
+    assert( check_raw_consistency_tests("NAMES_HAVE_SPACES",report) == NAMES_HAVE_SPACES );
 
     // assert( check_raw_consistency_tests("LINES_WO_9COLS",report) == (LINES_WO_9COLS|CDS_PRESENT) );
     // assert( check_raw_consistency_tests("OVERLAPPING_EXONS",report) == (OVERLAPPING_EXONS|CDS_PRESENT) );
