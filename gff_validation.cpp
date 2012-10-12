@@ -901,11 +901,12 @@ bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp
 /////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!? - presumably due to operator '==' having higher binding precendence that bitwise or '|'
 
 
-    bitflag = check_raw_consistency_tests("FINE",report);
+    bitflag = check_raw_consistency_tests("NO_TRANSCRIPTS",report);
     cout << "return value =\n\t" << std::bitset<sizeof(long long)*8>(bitflag) << "\n";
     for (int i = 0 ; i < sizeof(long long)*8 ; i++) if (int x = bitflag&(1ull<<i)) cout << " Active bit from return " << std::dec << i << "\n"; //  << " and " << x << "\n";
     cout << "\nsummary : " << report ;
 
+    assert( check_raw_consistency_tests("NO_TRANSCRIPTS",report) == NO_TRANSCRIPTS );
 
 /*  
 *
