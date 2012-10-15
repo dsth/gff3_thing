@@ -1,0 +1,1531 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ChadoXML file (FlyBase v1.0, no macros) created by dsth on Sun Jul 22 22:05:41 GMT 2012 -->
+<!-- Apollo version: Apollo Genome Annotation and Curation Tool, version 1.11.6, last updated May 12 2010 -->
+<chado date="Sun Jul 22 22:05:41 GMT 2012">
+  <_appdata  name="title">supercont1.3238</_appdata>
+  <_appdata  name="arm"></_appdata>
+  <_appdata  name="fmin">0</_appdata>
+  <_appdata  name="fmax">6999</_appdata>
+  <_appdata  name="residues">GCATTGTTTGTAGTTTTGCTCTAATGCTTTGCGAGTATTGCTGTTATGTATCGATTGAAATTATGATTATTGAAATTTTGTCCCGCTTTGGAGCAAAATACACCTGGTCACTTTGATCTACGGGCATCTCCCTCCATTCCTTCAGCATGATGGTATATACTAATTTCCTTTAAAATTAATTGTTCGCCATCAAAATTCAGCCCAAACATATGAATACAATTCCTTCTGACCGTACAATTATGGAATTTGCTCACAGTACAGCGAAAACAACACAATCAAAGGAACCGTATTTTTACGTCGAGCGTCGCGCACACATTGATGCGCACAAGCTTTTTTTTTCTCAGTAAGACGGATTGAACCTTGTTTACATTCTCAATTATACTAGGCGGTTGAGGAAATTTCGTAAAATATGGTGATTTATTGAAGTTTTACGACGTGTGATTGGAATGAAATCCTTCAGTGAAGAAGTACGAAGGTTTTCCATAGTGAAAATAAGTGCCCGGCGAAGTAAGTCACCCACGGGGAGCGAAAAGAAACTTGTGTTGGAAAGTGTTGTGGCTCAGTCGATCGCTAAGCATTTCTCTCAAATCGTGTTCGTCCATGCGATTTCGGTGAAAAAGTGCAAAGTGGATAATTGAACTGAAGTTATTTATCGAAAAACAATAGTTTTATTGCATTTTTGGTGTACAAGTGTACAAACCATAACAGCTTTCACAAAATTACACTTGGATAATGAATCTATGTTGCAGGTAAGTTTGAATATCCGCCGTATTGGAACATTTCAAGTTTGATACGACGAATAGTAGCGCTTACGACGAAGTAGAACCAAACCCTAGTTAACGATCAACGCTACGTCATCGTAATCATCGTCATCATCGAAACTTCAAAAGCAGTTTTTCTGTTCAAAACCGAATATTATTCGATGAAAATTTGTTCACTGTGTTGCGGTTGGAGAATTGAATACAGTGAACACATTTTCCAGTAAATTTTCTTGATTTTGAACGAAAAAACTGCTTTTGAAAATTCCAAAATTGATGACGGATCCTGTCCCCTTAACGTCAAAAAACTTCTAACATTCGCATTTCCCTATGAAGCAATATACGAAAAACTGATCAGTATTGCTGCGGTATAAAGTTTAAAAATGCTTGCTGCTAATCAAAACTGCAAGCCACATCAACTGTACCACAGTTCCGACCAAACTGCTTTGGTATTCCAGCTCTAGCACAGCTAGCAATCGCAATCAACCTGCGAAGCTCTTAGGTCGGGGAGCAGCACGAAGCGCTCGGGAAATCTTTATCTTGCTTGCATTTAAAAACCGGCGACTCAACCGAGGAGAACTTCCCCGATCGGACTTCGGCGCTTCTCGGAATCGCTATAGATACCTATGTGCAATGCATGGCCTCGACATTCAACCACCGACCGACCGACTGACTGTTTGTTCACACACATACCCCCATGCTCAAGCAAGGTATCGAAAAAGACTTCCGTGCTTCTAGCGACAGCGCCGACAATATCTTTCGTGGGGAAATGGTATAAAACGGTCTTAGGGACGGAAACATTCGTTCAAGGTGTGCCATGGAATTCAAACCCAGTCAGCTAAGCAATTGAAGAAACTAATTATATTATTAAACCTTCGATCTGTTTAATGGAATACCTTTTCATAAATGAAAACCGAATTTAGCACAATGTATACTATTTAATTCCATTAGGGACCGTCCATAAATGACGTACCATTTTAGGGGGGAGGGAGTCCACGATTTTGCTACGCACCATGTAATAGGTATGGGAAAATAGGATATTATGGGGGAGGGTGTGTCAAAAATTGGTCAAAAACTGCTACGTCATTCATGGACGCTGCCTTAGAGTTTGTATCCTTTGACAGATACGCGTATTTCGACCTCAATTGTAAGGCCGTTTACTGTACAGTGTTGTGTATTAGACTAATTATTTTATTATTATATTTAAATTAATTTGGTAATTTCTCTCACCATTTAATTATTTTGGGTAAAACTACTGATGAATTATTCAAAATTTAGTGTTCCATAATAAATAACATTTTTCTATCCTTTCGAGATTTTGACTTATAAAAAGGGTATATTTACAATTGGAGGACTAGAAAGTTGTCTTTAGTAATTTATTTCAGATATTTTGCTCCGAACCAAGCGTTTTATAAGTTCTCCCCAAAATCGAGGAATGATTTTTTAACCGAATTTCGATTGTGGGGCCATGGAAAAAGAAAAGATCTCCCTTGCTGTGTGTGGGTCAGATTCGGAACACTCGTCGAGTACCGACCGGGGTCGTCCATCGTCGGCCGCGCGTCTTGAAGATCGGATTGAATCCGGCCGGTCGTCGTCGGTGGCAAGCAGAACCACCTCGCGTGCCTTCGATTCGATTCGACACCGCTCGGGATTCGGTTACTCTCCACCCAGAGAGAAAGAAGGAGTGCGATAGCGACCAGGCTGACATGATTCCGAGCTGGTTCGATTTGCTCCCCACCAGAGCTCCACTCGCGATGTGGATGATGAAAAGCTTGAGGGGTATGCCCCCCATCACGTGGGACCATCCGACAGGGGTAGAACTTCGGCGCGGGGACTCACGAATTGAGCGCGATGGCTCACGTTGCGATGACGACGACGACCACATCGGGTTACTGCGATCGCATCTTCATCGTTATTATCACTCGCGGCCAAGGCTTGCTCTGTGCAGGTATTCATTTCGCACCCCGAATGCCTACTCGGATCGGTGAGCAGGCTGCCTCAAACGAAGTACACCGTAATTTATGCGTGACCCAAACCTTTAAACTACTTCTCTCACAGAAAATTCACCCGACTCATAAACACTCAGCTCGCCCATAATCATTATCAGTTCCGACAAACTTTGCGGAACCGGCTGTAAGCCAGACAAAAGAAGTTTAAAGTCCTTCCGGCGGCCCGGGCGGCACAAAACTTGAAGACCTTGCTCCGGAACCCGAAGTGGCTGAAGCACGGAGTTTCACTGATTGTGTATCCCCTGGCCACCCATCCCATGCTTCGTCTTTCGCTCATTTGCATCCGGGAAATTTAATTTTCCATAATTTATCGTACAATTTTCGCACTTGAGCAAGTGAGGGTTGAATCGGGAGCGGAAGAATGTTCGCCTTCCTTTTTAAAATGACGGCTAAAATGATACGCATTTAAGAAAGAGTAACACTCCGTGTTATCTGTTTTATCAAAAAGGCAATGAAATAACTATACATAAGCAATGTATAAGGAATTATAAAAATCAAAGAAGACTAGCAAAAATAATATTTCACTATTAATAGATAAAAATAAGCGCCAATAAATTGAACATTAGCTATGAATAATCAATTTTGTGCAAAAAATATGTATGCAACCTATAAATAATAAAATTTGCGGTAAAAAATTCACACTAAAAATATTTAAATATTCTAAGAAAAAATAAAAACTAATTCTTTGAACTTAAAATTTCTAATGGTAAATTGAAACTAAATACTGAAAAATTTGAAAAACGGCAAAAAAAAAAGAAATGCTGCATCAAAAAGATGCAAAAAACTGTAAGATCTGGTTTTAATTTATAAGATTTTTAGTGGATTTTTTTTTTATTTTTCTTTGGATTTATTTTATTTCGTAGTGCTTTATCCATTTTTTCTAGAAAAATATTTAATTATCTAATATTTATCTTTGATTCTTGCGATTACTTGTTTGTAATTATTTTATTTAATGTTTTTGATGAGCTAGTGATTGTTAGAATTTTCCTACGGCATGATCATATTTTTCCCCATTCAAATGCACAGCACTTTGTAGCACTATTTTCTTTTGACAGTTGCTGCTCCACCTCCTTCTTGAAAGGAGTTGTAAGAGGTTTTTGGTGGGGAAGGGGGAGGACGAAGTCAAGCTCCGGTCCCACTCGAGTTAGGCAGGCGCGGCATTGAATTTCCTTTTTCCTTAACGAACCATCAGAAAAGCTCTAGGCGTCGTCATCAGAAACGATGAGCTGCTCGGGAGGAAAACTTTCTCTTTCGGTTTGGGTGTAAACGAAGGCAAACTGAAGAATCGTTGCTCTAATTAAATTCCTGAACTTGAATGAACGTGCTACAGCTGGTTCTGGCATGATTTTTGCCCGGAGAGGAGAGAAGTTTGTAACCAGACGTCGGTACATTACAAATTTCTGTCAAGCTCTTTTAGAAAAAACACGTTTTGTCTTGAGCTAGTTATATAGACAGAGTAGTATATACTTTCTGTAAGATTAATATGCACTTATTCAATTGTTTCAACCAAACTATAGAAAATATGGTATTTAAATTACTTTTTCCAAATGAATAAAAGTATATTCTGAAGTATTTTACTTTTCTAGGATTTATTTTCTAATTTATTTAAGAACTTCAGCTTTCACCCTAAAATAATGGGTTTTATATGTTGCCCATTATGTTGCCTTGATTGCATTAACGATATTTTTTATGTTAGTGTATTTTTCACGTATTTCATTTAAATTTCTTAGTATCATATCCTAAAAATAGCCATAATATTTCAAAATTTTGAAGCAACGAGGGATAGTAAAAAACCACCATTTCTCCCCGACGGGGAATTGAACCCCGGTCTCCCGCGTGACAGGCGGGGATACTGACCACTATACTATCGAGGACTGATGAGCAGTGAGTTATATTTGCTATACTTCACAAATAAGTCTTCAATTAGAAGAGGAGAAAATATTCGAAATTTCTTTCGACAACACATCGTACTGACTGAATCTGCCTTATCGACAAAAATTTTAGTTGCATCGGCCGGGAATCGAACCCGGGCCGCCCGCGTGGCAGGCGAGCATTCTACCACTGAACCACCGATGCTTCGTGAATTTGATTCAAAACACAAAATTTTTGATTCCAAATATTGAATTAACATATTTTAATATATTTGTTTGCTTATTTTAAGGAACATATAGGGTGTCCCAGAAAGTATAAACACGACTTTGATAATGAAAATCATAGTACTTTTCCAAATAATCAAATATTTTTATATTTATGTATTTTTCTAGAGGCTTTTTCAACCAGCATCTGTGATAAATTTGTTTGATTTAATAATTCTTTACATTACAAATTTTGATTTTACAAAATCACTTCTTATTTGGTTAGCACAGAACCTTCATTTTGTTTTCGTTGAAAAATAACTAGTAAAATATGTTTTTATCAAAATCTTCCGACGTGGTGAGTTCAAGTACATTGTATCAATCAAGTTTCACATAAGTTTTCGAATGAAATATGATTTGGCTTTGTTAGAGAACACTTGAAAAAATGGTAAAGTTCGAAAAATCTCGTATTTTTCTCTCCACATAAGACAACATCACAAAGTTATAACTCTTCAGGTATTTTAAATGGTAATGAAAATAATAAATTTCAGATTTACGAAAGGTTAATCCCTATTCTCTTTGACAGGCCACTTTAATTATTGATTCATTCATCTTTTAGGGTAAACGTAGGAAATTCTTATTTATTTCCATTTGGTCGATTACACGGCTGAAATCGGATTTTTAGTTCCAATACAAATTTACATGCTTAAGTTTAAAATTTCAATTTGAATAAGTGATAGTACGATCAATTTCCATATCGTCGCTGATTAATATATTTTTTCAAATTTTAATTACACTCAGTGTCTGACATAGTACAAATTTTGTAAAACCAAGTCGCTCAGAATTAACGTGATTTGTGCAAGACAGATAAGATATGCTTCAAAGAAATGTTATGTAATCAACACATTTGTTTTTAAATTATTCATTAAAAAATCGCAACCTTCTCTTGTTGGGTACAATAATCAAATGTGTAAAAATAAGATTTTTATCTTCACTAATCTTGAAATTGCAGTATTGTGAAGGCGTGCCTTTCTGGGACACCCTATAGTGCTAAAAATCGTGCCATTTTTTTAACTAAATTCGAATTATAGAGATCGATTTTATTTCGCCGAATATGAGTGTCGAACAAGAAAATACACAAAAATATCGAATCACGAAGATTTTTCTACGTAAATTTGATTTATACAGTCGACTCTCCACATCTTGATTTTCTACATCTCGGTATATCTCCCTATGTCGATGGTTGCTTCGGTCCCTTCATTGTGTATACGACTTCTCTCTCTCCATATCTCGATATCCTCCTTATCTCAATATCTCCATATCTCGATGTGTTCCTATTGATTTTTGTTCCCAATTTTCTCTTCATATGTCGATATGAACATTATCAAAGGTTACTAGACCAGATTTAAAACGAAGTTTTAAATTCATCTCAAGTTGGTTTTGCATTGACACAGCTGAAAAAGTATCAGCATACTTTAAGCATGTTAGCGCGTACAGTGATACTTTTTTCAAGTCAATATAAACTACACAGCGTAACAAAAATGACATTTTTGCGTGTCTCAAGGATCAAATTATGTGTCTCGAGTAGATTTGGGGTTGCTGAATCTGATGGCATTCTCAGAAATGTTCCAGCACGTCACAATTGTTAGCTATAGGTCGCCAAAGTTGTATAAAACACTGGTTTTATTCATGTTTACATGAAATTTAAAGAACAATTTATCAATTTTTTGTAATCTAATCCACCAAGCATGCAAAATAGAACTTGAACTCTCATTTCAGATATAATTTGATTGAAATTGCACGATTAAATTTCGATTAAACTGATTTTTTCAACATGCTTGCAGTCTCCATACAAAATTCTTCGTTTCATCTATATGGCAAAATACAACAATTCTCTAAACCATCCGAAAATAATTTTTCCTCGTCAAAACTATTAAAAACTTTGATGATAAGTATTGTTAGACACATAAAGTTTGAATTCTGTAGCAAATTAAGCAAATAAATTGCCTTACAAGCTGGCAAACTTGCATGCAAGTTGGTTGAAATAGTCATTTTTTGTATTTTCAACAGCCAATATCTCAAAAACTAGACGTGCTATGATATTTCTGAAAACGACATTGGATTCAGCAACCCTCAAATGAGTGAATAGTGGTATTT</_appdata>
+
+                                                <!-- START OF GENE -->
+
+    <feature>   
+        <type_id><cvterm>
+            <name>gene</name>
+            <cv_id><cv><name>sequence</name></cv></cv_id> <!-- it is the sequence module afterall...?!? -->
+            <is_obsolete>0</is_obsolete>
+            <is_relationshiptype>0</is_relationshiptype>
+            <dbxref_id><dbxref>
+                <db_id><db><name>SO</name></db></db_id>
+                <accession>0000704</accession>
+            </dbxref></dbxref_id>
+        </cvterm></type_id>
+
+<!-- CLEARLY FACTOR THIS -->
+
+        <organism_id><organism><genus>Aedes</genus><species>aegypti</species></organism></organism_id>
+
+        <uniquename>AAEL016956</uniquename>
+        <name>AAEL016956</name>
+
+        <dbxref_id><dbxref>
+            <db_id><db><name>Ensembl</name></db></db_id>
+            <accession>AAEL016956</accession>
+        </dbxref></dbxref_id>
+
+        <seqlen>72</seqlen> <!-- not actually required?!? -->
+        <is_analysis>0</is_analysis>
+        <is_obsolete>0</is_obsolete>
+
+<!-- CLEARLY FACTOR THIS -->
+
+        <featureloc>
+            <is_fmin_partial>0</is_fmin_partial>
+            <is_fmax_partial>0</is_fmax_partial>
+            <fmax>4641</fmax>
+            <fmin>4569</fmin>
+            <strand>-1</strand>
+            <locgroup>0</locgroup>
+            <rank>0</rank>
+
+            <!-- FACTOR SOURCE FEATURE FOR SCAFFOLD!?! -->
+                        <srcfeature_id> <feature>
+                            <type_id><cvterm>
+                                <name>supercontig</name>
+                                <cv_id><cv><name>SO</name></cv></cv_id>
+                                <is_obsolete>0</is_obsolete>
+                                <is_relationshiptype>0</is_relationshiptype>
+                                <dbxref_id><dbxref>
+                                    <db_id><db><name>SO</name></db></db_id>
+                                    <accession>0000148</accession>
+                                </dbxref></dbxref_id>
+                            </cvterm></type_id>
+                            <organism_id><organism><genus>Aedes</genus><species>aegypti</species></organism></organism_id>
+                            <uniquename>supercont1.3238</uniquename>
+                        </feature></srcfeature_id>
+
+
+
+        </featureloc>
+
+
+<!-- flybase relationship type part of -->
+
+    <feature_relationship>
+        <type_id><cvterm>
+            <name>proper_part_of</name>
+            <cv_id><cv><name>relationship type</name></cv></cv_id>
+            <is_obsolete>0</is_obsolete>
+            <is_relationshiptype>0</is_relationshiptype>
+
+            <dbxref_id><dbxref>
+                <db_id><db><name>FlyBase_internal</name></db></db_id>
+                <accession>relationship type:partof</accession>
+            </dbxref></dbxref_id>
+        </cvterm></type_id>
+        <rank>0</rank>
+
+        <subject_id> <!-- <feature> -->
+        
+<!-- start of transcript feature -->
+
+        <!-- <subject_id> --> <feature> 
+
+            <type_id><cvterm>
+                <name>tRNA</name>
+                <cv_id><cv><name>sequence</name></cv></cv_id>
+                <is_obsolete>0</is_obsolete>
+                <is_relationshiptype>0</is_relationshiptype>
+                <dbxref_id><dbxref>
+                    <db_id><db><name>SO</name></db></db_id>
+                    <accession>0000253</accession>
+                </dbxref></dbxref_id>
+            </cvterm></type_id>
+
+            <organism_id><organism><genus>Aedes</genus><species>aegypti</species></organism></organism_id>
+
+            <uniquename>AAEL016956-RA</uniquename>
+            <name>AAEL016956-RA</name>
+
+            <dbxref_id><dbxref>
+                <db_id><db><name>Ensembl</name></db></db_id>
+                <accession>AAEL016956-RA</accession>
+            </dbxref></dbxref_id>
+
+            <residues>TCCTCGATAGTATAGTGGTCAGTATCCCCGCCTGTCACGCGGGAGACCGGGGTTCAATTCCCCGTCGGGGAG</residues>
+            <seqlen>72</seqlen>
+            <is_analysis>0</is_analysis>
+            <is_obsolete>0</is_obsolete>
+
+            <featureloc>
+                <is_fmin_partial>0</is_fmin_partial>
+                <is_fmax_partial>0</is_fmax_partial>
+                <fmax>4641</fmax>
+                <fmin>4569</fmin>
+                <strand>-1</strand>
+                <locgroup>0</locgroup>
+                <rank>0</rank>
+
+                <!-- FACTOR SOURCE FEATURE FOR SCAFFOLD!?! -->
+                        <srcfeature_id> <feature>
+                            <type_id><cvterm>
+                                <name>supercontig</name>
+                                <cv_id><cv><name>SO</name></cv></cv_id>
+                                <is_obsolete>0</is_obsolete>
+                                <is_relationshiptype>0</is_relationshiptype>
+                                <dbxref_id><dbxref>
+                                    <db_id><db><name>SO</name></db></db_id>
+                                    <accession>0000148</accession>
+                                </dbxref></dbxref_id>
+                            </cvterm></type_id>
+                            <organism_id><organism><genus>Aedes</genus><species>aegypti</species></organism></organism_id>
+                            <uniquename>supercont1.3238</uniquename>
+                        </feature></srcfeature_id>
+
+
+
+            </featureloc>
+
+            <feature_relationship>
+
+                <type_id><cvterm>
+                    <name>proper_part_of</name>
+                    <cv_id><cv><name>relationship type</name></cv></cv_id>
+                    <is_obsolete>0</is_obsolete>
+                    <is_relationshiptype>0</is_relationshiptype>
+                    <dbxref_id><dbxref>
+                        <db_id><db><name>FlyBase_internal</name></db></db_id>
+                        <accession>relationship type:partof</accession>
+                    </dbxref></dbxref_id>
+                </cvterm></type_id>
+
+                <rank>0</rank>
+
+                <subject_id> <!-- <feature> -->
+                
+<!-- start of exon -->
+
+                <!-- <subject_id> --> <feature>  
+
+                    <type_id><cvterm>
+                        <name>exon</name>
+                        <cv_id><cv><name>sequence</name></cv></cv_id>
+                        <is_obsolete>0</is_obsolete>
+                        <is_relationshiptype>0</is_relationshiptype>
+                        <dbxref_id><dbxref>
+                            <db_id><db><name>SO</name></db></db_id>
+                            <accession>0000147</accession>
+                        </dbxref></dbxref_id>
+                    </cvterm></type_id>
+
+                    <organism_id><organism><genus>Aedes</genus><species>aegypti</species></organism></organism_id>
+
+                    <uniquename>E069460</uniquename>
+                    <name>AAEL016956-RA</name>
+                    <seqlen>72</seqlen>
+                    <is_analysis>0</is_analysis>
+                    <is_obsolete>0</is_obsolete>
+
+                    <featureloc>
+                        <is_fmin_partial>0</is_fmin_partial>
+                        <is_fmax_partial>0</is_fmax_partial>
+                        <fmax>4641</fmax>
+                        <fmin>4569</fmin>
+                        <strand>-1</strand>
+                        <locgroup>0</locgroup>
+                        <rank>0</rank>
+
+                        <!-- FACTOR SOURCE FEATURE FOR SCAFFOLD!?! -->
+                        <srcfeature_id> <feature>
+                            <type_id><cvterm>
+                                <name>supercontig</name>
+                                <cv_id><cv><name>SO</name></cv></cv_id>
+                                <is_obsolete>0</is_obsolete>
+                                <is_relationshiptype>0</is_relationshiptype>
+                                <dbxref_id><dbxref>
+                                    <db_id><db><name>SO</name></db></db_id>
+                                    <accession>0000148</accession>
+                                </dbxref></dbxref_id>
+                            </cvterm></type_id>
+                            <organism_id><organism><genus>Aedes</genus><species>aegypti</species></organism></organism_id>
+                            <uniquename>supercont1.3238</uniquename>
+                        </feature></srcfeature_id>
+
+
+
+                    </featureloc>
+
+                </feature> </subject_id>
+                
+<!-- end of exon feature -->
+
+            </feature_relationship>
+
+<!-- end of exon part of feature relationship -->
+
+
+</feature><!-- end of transcript --></subject_id></feature_relationship></feature><!-- end of GENE -->
+                                                <!-- START OF GENE -->
+
+    <feature>   
+        <type_id><cvterm>
+            <name>gene</name>
+            <cv_id><cv><name>sequence</name></cv></cv_id> <!-- it is the sequence module afterall...?!? -->
+            <is_obsolete>0</is_obsolete>
+            <is_relationshiptype>0</is_relationshiptype>
+            <dbxref_id><dbxref>
+                <db_id><db><name>SO</name></db></db_id>
+                <accession>0000704</accession>
+            </dbxref></dbxref_id>
+        </cvterm></type_id>
+
+<!-- CLEARLY FACTOR THIS -->
+
+        <organism_id><organism><genus>Aedes</genus><species>aegypti</species></organism></organism_id>
+
+        <uniquename>AAEL016957</uniquename>
+        <name>AAEL016957</name>
+
+        <dbxref_id><dbxref>
+            <db_id><db><name>Ensembl</name></db></db_id>
+            <accession>AAEL016957</accession>
+        </dbxref></dbxref_id>
+
+        <seqlen>71</seqlen> <!-- not actually required?!? -->
+        <is_analysis>0</is_analysis>
+        <is_obsolete>0</is_obsolete>
+
+<!-- CLEARLY FACTOR THIS -->
+
+        <featureloc>
+            <is_fmin_partial>0</is_fmin_partial>
+            <is_fmax_partial>0</is_fmax_partial>
+            <fmax>4843</fmax>
+            <fmin>4772</fmin>
+            <strand>-1</strand>
+            <locgroup>0</locgroup>
+            <rank>0</rank>
+
+            <!-- FACTOR SOURCE FEATURE FOR SCAFFOLD!?! -->
+                        <srcfeature_id> <feature>
+                            <type_id><cvterm>
+                                <name>supercontig</name>
+                                <cv_id><cv><name>SO</name></cv></cv_id>
+                                <is_obsolete>0</is_obsolete>
+                                <is_relationshiptype>0</is_relationshiptype>
+                                <dbxref_id><dbxref>
+                                    <db_id><db><name>SO</name></db></db_id>
+                                    <accession>0000148</accession>
+                                </dbxref></dbxref_id>
+                            </cvterm></type_id>
+                            <organism_id><organism><genus>Aedes</genus><species>aegypti</species></organism></organism_id>
+                            <uniquename>supercont1.3238</uniquename>
+                        </feature></srcfeature_id>
+
+
+
+        </featureloc>
+
+
+<!-- flybase relationship type part of -->
+
+    <feature_relationship>
+        <type_id><cvterm>
+            <name>proper_part_of</name>
+            <cv_id><cv><name>relationship type</name></cv></cv_id>
+            <is_obsolete>0</is_obsolete>
+            <is_relationshiptype>0</is_relationshiptype>
+
+            <dbxref_id><dbxref>
+                <db_id><db><name>FlyBase_internal</name></db></db_id>
+                <accession>relationship type:partof</accession>
+            </dbxref></dbxref_id>
+        </cvterm></type_id>
+        <rank>0</rank>
+
+        <subject_id> <!-- <feature> -->
+        
+<!-- start of transcript feature -->
+
+        <!-- <subject_id> --> <feature> 
+
+            <type_id><cvterm>
+                <name>tRNA</name>
+                <cv_id><cv><name>sequence</name></cv></cv_id>
+                <is_obsolete>0</is_obsolete>
+                <is_relationshiptype>0</is_relationshiptype>
+                <dbxref_id><dbxref>
+                    <db_id><db><name>SO</name></db></db_id>
+                    <accession>0000253</accession>
+                </dbxref></dbxref_id>
+            </cvterm></type_id>
+
+            <organism_id><organism><genus>Aedes</genus><species>aegypti</species></organism></organism_id>
+
+            <uniquename>AAEL016957-RA</uniquename>
+            <name>AAEL016957-RA</name>
+
+            <dbxref_id><dbxref>
+                <db_id><db><name>Ensembl</name></db></db_id>
+                <accession>AAEL016957-RA</accession>
+            </dbxref></dbxref_id>
+
+            <residues>GCATCGGTGGTTCAGTGGTAGAATGCTCGCCTGCCACGCGGGCGGCCCGGGTTCGATTCCCGGCCGATGCA</residues>
+            <seqlen>71</seqlen>
+            <is_analysis>0</is_analysis>
+            <is_obsolete>0</is_obsolete>
+
+            <featureloc>
+                <is_fmin_partial>0</is_fmin_partial>
+                <is_fmax_partial>0</is_fmax_partial>
+                <fmax>4843</fmax>
+                <fmin>4772</fmin>
+                <strand>-1</strand>
+                <locgroup>0</locgroup>
+                <rank>0</rank>
+
+                <!-- FACTOR SOURCE FEATURE FOR SCAFFOLD!?! -->
+                        <srcfeature_id> <feature>
+                            <type_id><cvterm>
+                                <name>supercontig</name>
+                                <cv_id><cv><name>SO</name></cv></cv_id>
+                                <is_obsolete>0</is_obsolete>
+                                <is_relationshiptype>0</is_relationshiptype>
+                                <dbxref_id><dbxref>
+                                    <db_id><db><name>SO</name></db></db_id>
+                                    <accession>0000148</accession>
+                                </dbxref></dbxref_id>
+                            </cvterm></type_id>
+                            <organism_id><organism><genus>Aedes</genus><species>aegypti</species></organism></organism_id>
+                            <uniquename>supercont1.3238</uniquename>
+                        </feature></srcfeature_id>
+
+
+
+            </featureloc>
+
+            <feature_relationship>
+
+                <type_id><cvterm>
+                    <name>proper_part_of</name>
+                    <cv_id><cv><name>relationship type</name></cv></cv_id>
+                    <is_obsolete>0</is_obsolete>
+                    <is_relationshiptype>0</is_relationshiptype>
+                    <dbxref_id><dbxref>
+                        <db_id><db><name>FlyBase_internal</name></db></db_id>
+                        <accession>relationship type:partof</accession>
+                    </dbxref></dbxref_id>
+                </cvterm></type_id>
+
+                <rank>0</rank>
+
+                <subject_id> <!-- <feature> -->
+                
+<!-- start of exon -->
+
+                <!-- <subject_id> --> <feature>  
+
+                    <type_id><cvterm>
+                        <name>exon</name>
+                        <cv_id><cv><name>sequence</name></cv></cv_id>
+                        <is_obsolete>0</is_obsolete>
+                        <is_relationshiptype>0</is_relationshiptype>
+                        <dbxref_id><dbxref>
+                            <db_id><db><name>SO</name></db></db_id>
+                            <accession>0000147</accession>
+                        </dbxref></dbxref_id>
+                    </cvterm></type_id>
+
+                    <organism_id><organism><genus>Aedes</genus><species>aegypti</species></organism></organism_id>
+
+                    <uniquename>E069459</uniquename>
+                    <name>AAEL016957-RA</name>
+                    <seqlen>71</seqlen>
+                    <is_analysis>0</is_analysis>
+                    <is_obsolete>0</is_obsolete>
+
+                    <featureloc>
+                        <is_fmin_partial>0</is_fmin_partial>
+                        <is_fmax_partial>0</is_fmax_partial>
+                        <fmax>4843</fmax>
+                        <fmin>4772</fmin>
+                        <strand>-1</strand>
+                        <locgroup>0</locgroup>
+                        <rank>0</rank>
+
+                        <!-- FACTOR SOURCE FEATURE FOR SCAFFOLD!?! -->
+                        <srcfeature_id> <feature>
+                            <type_id><cvterm>
+                                <name>supercontig</name>
+                                <cv_id><cv><name>SO</name></cv></cv_id>
+                                <is_obsolete>0</is_obsolete>
+                                <is_relationshiptype>0</is_relationshiptype>
+                                <dbxref_id><dbxref>
+                                    <db_id><db><name>SO</name></db></db_id>
+                                    <accession>0000148</accession>
+                                </dbxref></dbxref_id>
+                            </cvterm></type_id>
+                            <organism_id><organism><genus>Aedes</genus><species>aegypti</species></organism></organism_id>
+                            <uniquename>supercont1.3238</uniquename>
+                        </feature></srcfeature_id>
+
+
+
+                    </featureloc>
+
+                </feature> </subject_id>
+                
+<!-- end of exon feature -->
+
+            </feature_relationship>
+
+<!-- end of exon part of feature relationship -->
+
+
+</feature><!-- end of transcript --></subject_id></feature_relationship></feature><!-- end of GENE -->
+                                    <!-- MATCH HEADER -->
+
+<!-- seems match doesn't get featureloc or analysis score if you don't want?!? --> 
+
+<!-- ###################################### match ###################################### -->
+<!-- match : sofa id: SO:0000343 is_a: SO:0001410 experimental_feature (region which is the result of some arbitrary experimental procedure) is_a: SO:0000001 region -->
+
+    <feature>
+
+        <type_id><cvterm>                                                   <!-- f.type_id=cvterm.cvterm_id -->
+            <name>match</name>
+            <cv_id><cv><name>sequence</name></cv></cv_id>
+            <is_obsolete>0</is_obsolete>
+            <is_relationshiptype>0</is_relationshiptype>
+            <dbxref_id><dbxref>                                             <!-- SO details for match cvterm type -->
+                <db_id><db><name>SO</name></db></db_id>                    
+                <accession>0000343</accession>
+            </dbxref></dbxref_id>
+        </cvterm></type_id>
+        <organism_id><organism><genus>Computational</genus><species>Computational Result</species></organism></organism_id>
+        
+        <uniquename>supercont1.3238:hit:14251:0_0</uniquename>
+        <name>supercont1.3238:hit:14251:0_0</name>
+
+        <dbxref_id><dbxref>                                                 <!-- seems the feature also gets the same dbxref stuff... -->
+            <db_id><db><name>SO</name></db></db_id>
+            <accession>0000343</accession>
+        </dbxref></dbxref_id>
+
+        <seqlen>381</seqlen>
+
+        <is_obsolete>0</is_obsolete>
+
+        <is_analysis>1</is_analysis>                                        <!-- this is an analysis feature - now join to analysisfeature with f.feature_id as af FK -->
+        <analysisfeature><analysis_id><analysis>
+            <program>augustus_masked</program>
+            <programversion>1</programversion>
+            <sourcename>VectorBase</sourcename>
+            <sourceversion>unknown</sourceversion>
+        </analysis></analysis_id><!-- won't bother with rawscore?!? --></analysisfeature>
+
+
+<!-- FLYBASE PART_OF REALTIONSHIP TYPE FOR FEATURE RELATIONSHIP object_id -> subject_id -->
+
+        <feature_relationship>                                              <!-- f.feature_id=feature_relationship.oject_id -->
+            <type_id><cvterm>                                               <!-- just the details for the flybase part_of relationship -->
+                <name>proper_part_of</name>
+                <cv_id><cv><name>relationship type</name></cv></cv_id>
+                <is_obsolete>0</is_obsolete>
+                <is_relationshiptype>0</is_relationshiptype>
+                <dbxref_id><dbxref>
+                    <db_id><db><name>FlyBase_internal</name></db></db_id>
+                    <accession>relationship type:partof</accession>
+                </dbxref></dbxref_id>
+            </cvterm></type_id>
+            <rank>0</rank>                                                  <!-- is fr.rank this needed for analysis parts?!? -->
+            <subject_id> <!-- <feature> -->                                 <!-- start the nested feature fr.subject_id=f.feature_id -->
+
+                                    <!-- PART OF FEATURE subject_id -->
+
+            <!-- <subject_id> --> <feature>                                 <!-- start the nested feature fr.subject_id=f.feature_id -->
+
+                <type_id><cvterm>                                                   <!-- FlyBase seems to have a slight erorr and models subjects as match too -->
+                    <name>match</name>
+                    <cv_id><cv><name>sequence</name></cv></cv_id>
+                    <is_obsolete>0</is_obsolete>
+                    <is_relationshiptype>0</is_relationshiptype>
+                    <dbxref_id><dbxref>                                             <!-- SO details for match cvterm type -->
+                        <db_id><db><name>SO</name></db></db_id>                    
+                        <accession>0000343</accession>
+                    </dbxref></dbxref_id>
+                </cvterm></type_id>
+
+                <organism_id><organism><genus>Computational</genus><species>Computational Result</species></organism></organism_id>
+
+                <uniquename>supercont1.3238:hit:14251:0_0_unmhsp_0</uniquename>
+                <name>supercont1.3238:hit:14251:0_0_unmhsp_0</name>
+                <is_obsolete>0</is_obsolete>
+                <is_analysis>1</is_analysis>                                        <!-- this is an analysis feature - now join to analysisfeature with f.feature_id as af FK -->
+                <analysisfeature><analysis_id><analysis>
+                    <program>augustus_masked</program>
+                    <programversion>1</programversion>
+                    <sourcename>VectorBase</sourcename>
+                    <sourceversion>unknown</sourceversion>
+                </analysis></analysis_id><rawscore>0.51</rawscore></analysisfeature>
+
+<!-- THIS IS THE ORIGINAL TARGET HIT STUFF!?! e.g. Target=... -->
+
+                <featureloc>                                                        <!-- part of gets two location f.feature_id=fl.feature_id -->
+
+                    <!-- <residue_info>X</residue_info> -->
+                    <is_fmin_partial>0</is_fmin_partial>
+                    <is_fmax_partial>0</is_fmax_partial>
+                    <fmax>381</fmax>
+                    <fmin>0</fmin>
+                    <strand>1</strand>                                              <!-- it's the target... -->
+                    <locgroup>0</locgroup>
+                    <rank>1</rank>                                                  <!-- fl.rank is for when it maps multiple times?!? -->
+
+                    <srcfeature_id> <!-- <feature> -->
+
+<!-- THE TARGET HIT - prolly ought to give them the appropriate details - i.e. NOT EST!?! -->
+
+                    <!-- <srcfeature_id> --> <feature>
+
+                        
+                        <type_id><cvterm>
+                            <name>experimental_feature</name>
+                            <cv_id><cv><name>sequence</name></cv></cv_id>
+                            <is_obsolete>0</is_obsolete>
+                            <is_relationshiptype>0</is_relationshiptype>
+                            <dbxref_id><dbxref>
+                                <db_id><db><name>SO</name></db></db_id>
+                                <accession>0001410</accession>
+                            </dbxref></dbxref_id>
+                        </cvterm></type_id>
+
+
+
+                        <organism_id><organism><genus>Computational</genus><species>Computational Result</species></organism></organism_id>
+
+                        <uniquename>augustus_masked-supercont1.3238-abinit-gene-0.0-mRNA-1</uniquename>
+
+                        <name>augustus_masked-supercont1.3238-abinit-gene-0.0-mRNA-1</name>                
+
+
+                        <is_analysis>1</is_analysis> <!-- JUST DON'T BOTHER GIVING THE ANALYSIS FEATURES STUFF?!?S -->
+
+                    </feature> <!-- </srcfeature_id> -->
+
+                    <!-- </feature> --> </srcfeature_id>
+
+                </featureloc>
+                
+<!-- THIS IS THE ACTUAL SCAFFOLD - will be chromosomal or scaffold!?... -->
+
+                <featureloc>
+
+                        <is_fmin_partial>0</is_fmin_partial>
+                        <is_fmax_partial>0</is_fmax_partial>
+                        <fmax>2643</fmax>
+                        <fmin>2262</fmin>
+                        <strand>-1</strand>
+                        <locgroup>0</locgroup>
+                        <rank>0</rank>
+
+                        <!-- FACTOR SOURCE FEATURE FOR SCAFFOLD!?! -->
+                        <srcfeature_id> <feature>
+                            <type_id><cvterm>
+                                <name>supercontig</name>
+                                <cv_id><cv><name>SO</name></cv></cv_id>
+                                <is_obsolete>0</is_obsolete>
+                                <is_relationshiptype>0</is_relationshiptype>
+                                <dbxref_id><dbxref>
+                                    <db_id><db><name>SO</name></db></db_id>
+                                    <accession>0000148</accession>
+                                </dbxref></dbxref_id>
+                            </cvterm></type_id>
+                            <organism_id><organism><genus>Aedes</genus><species>aegypti</species></organism></organism_id>
+                            <uniquename>supercont1.3238</uniquename>
+                        </feature></srcfeature_id>
+
+
+
+                </featureloc>
+
+            </feature> <!-- </subject_id> -->
+
+            <!-- </feature> --> </subject_id>
+            
+        </feature_relationship>
+
+</feature><!-- match end -->
+                                    <!-- MATCH HEADER -->
+
+<!-- seems match doesn't get featureloc or analysis score if you don't want?!? --> 
+
+<!-- ###################################### match ###################################### -->
+<!-- match : sofa id: SO:0000343 is_a: SO:0001410 experimental_feature (region which is the result of some arbitrary experimental procedure) is_a: SO:0000001 region -->
+
+    <feature>
+
+        <type_id><cvterm>                                                   <!-- f.type_id=cvterm.cvterm_id -->
+            <name>match</name>
+            <cv_id><cv><name>sequence</name></cv></cv_id>
+            <is_obsolete>0</is_obsolete>
+            <is_relationshiptype>0</is_relationshiptype>
+            <dbxref_id><dbxref>                                             <!-- SO details for match cvterm type -->
+                <db_id><db><name>SO</name></db></db_id>                    
+                <accession>0000343</accession>
+            </dbxref></dbxref_id>
+        </cvterm></type_id>
+        <organism_id><organism><genus>Computational</genus><species>Computational Result</species></organism></organism_id>
+        
+        <uniquename>supercont1.3238:hit:14249:0_0</uniquename>
+        <name>supercont1.3238:hit:14249:0_0</name>
+
+        <dbxref_id><dbxref>                                                 <!-- seems the feature also gets the same dbxref stuff... -->
+            <db_id><db><name>SO</name></db></db_id>
+            <accession>0000343</accession>
+        </dbxref></dbxref_id>
+
+        <seqlen>72</seqlen>
+
+        <is_obsolete>0</is_obsolete>
+
+        <is_analysis>1</is_analysis>                                        <!-- this is an analysis feature - now join to analysisfeature with f.feature_id as af FK -->
+        <analysisfeature><analysis_id><analysis>
+            <program>blastx:Angam</program>
+            <programversion>1</programversion>
+            <sourcename>VectorBase</sourcename>
+            <sourceversion>unknown</sourceversion>
+        </analysis></analysis_id><!-- won't bother with rawscore?!? --></analysisfeature>
+
+
+<!-- FLYBASE PART_OF REALTIONSHIP TYPE FOR FEATURE RELATIONSHIP object_id -> subject_id -->
+
+        <feature_relationship>                                              <!-- f.feature_id=feature_relationship.oject_id -->
+            <type_id><cvterm>                                               <!-- just the details for the flybase part_of relationship -->
+                <name>proper_part_of</name>
+                <cv_id><cv><name>relationship type</name></cv></cv_id>
+                <is_obsolete>0</is_obsolete>
+                <is_relationshiptype>0</is_relationshiptype>
+                <dbxref_id><dbxref>
+                    <db_id><db><name>FlyBase_internal</name></db></db_id>
+                    <accession>relationship type:partof</accession>
+                </dbxref></dbxref_id>
+            </cvterm></type_id>
+            <rank>0</rank>                                                  <!-- is fr.rank this needed for analysis parts?!? -->
+            <subject_id> <!-- <feature> -->                                 <!-- start the nested feature fr.subject_id=f.feature_id -->
+
+                                    <!-- PART OF FEATURE subject_id -->
+
+            <!-- <subject_id> --> <feature>                                 <!-- start the nested feature fr.subject_id=f.feature_id -->
+
+                <type_id><cvterm>                                                   <!-- FlyBase seems to have a slight erorr and models subjects as match too -->
+                    <name>match</name>
+                    <cv_id><cv><name>sequence</name></cv></cv_id>
+                    <is_obsolete>0</is_obsolete>
+                    <is_relationshiptype>0</is_relationshiptype>
+                    <dbxref_id><dbxref>                                             <!-- SO details for match cvterm type -->
+                        <db_id><db><name>SO</name></db></db_id>                    
+                        <accession>0000343</accession>
+                    </dbxref></dbxref_id>
+                </cvterm></type_id>
+
+                <organism_id><organism><genus>Computational</genus><species>Computational Result</species></organism></organism_id>
+
+                <uniquename>supercont1.3238:hit:14249:0_0_unmhsp_0</uniquename>
+                <name>supercont1.3238:hit:14249:0_0_unmhsp_0</name>
+                <is_obsolete>0</is_obsolete>
+                <is_analysis>1</is_analysis>                                        <!-- this is an analysis feature - now join to analysisfeature with f.feature_id as af FK -->
+                <analysisfeature><analysis_id><analysis>
+                    <program>blastx:Angam</program>
+                    <programversion>1</programversion>
+                    <sourcename>VectorBase</sourcename>
+                    <sourceversion>unknown</sourceversion>
+                </analysis></analysis_id><rawscore>122</rawscore></analysisfeature>
+
+<!-- THIS IS THE ORIGINAL TARGET HIT STUFF!?! e.g. Target=... -->
+
+                <featureloc>                                                        <!-- part of gets two location f.feature_id=fl.feature_id -->
+
+                    <!-- <residue_info>X</residue_info> -->
+                    <is_fmin_partial>0</is_fmin_partial>
+                    <is_fmax_partial>0</is_fmax_partial>
+                    <fmax>686</fmax>
+                    <fmin>662</fmin>
+                    <strand>1</strand>                                              <!-- it's the target... -->
+                    <locgroup>0</locgroup>
+                    <rank>1</rank>                                                  <!-- fl.rank is for when it maps multiple times?!? -->
+
+                    <srcfeature_id> <!-- <feature> -->
+
+<!-- THE TARGET HIT - prolly ought to give them the appropriate details - i.e. NOT EST!?! -->
+
+                    <!-- <srcfeature_id> --> <feature>
+
+                        
+                        <type_id><cvterm>
+                            <name>polypeptide</name>
+                            <cv_id><cv><name>sequence</name></cv></cv_id>
+                            <is_obsolete>0</is_obsolete>
+                            <is_relationshiptype>0</is_relationshiptype>
+                            <dbxref_id><dbxref>
+                                <db_id><db><name>SO</name></db></db_id>
+                                <accession>0000104</accession>
+                            </dbxref></dbxref_id>
+                        </cvterm></type_id>
+
+
+
+                        <organism_id><organism><genus>Computational</genus><species>Computational Result</species></organism></organism_id>
+
+                        <uniquename>tr|Q380J0|Q380J0_ANOGA</uniquename>
+
+                        <name>tr|Q380J0|Q380J0_ANOGA</name>                
+
+
+                        <is_analysis>1</is_analysis> <!-- JUST DON'T BOTHER GIVING THE ANALYSIS FEATURES STUFF?!?S -->
+
+                    </feature> <!-- </srcfeature_id> -->
+
+                    <!-- </feature> --> </srcfeature_id>
+
+                </featureloc>
+                
+<!-- THIS IS THE ACTUAL SCAFFOLD - will be chromosomal or scaffold!?... -->
+
+                <featureloc>
+
+                        <is_fmin_partial>0</is_fmin_partial>
+                        <is_fmax_partial>0</is_fmax_partial>
+                        <fmax>4642</fmax>
+                        <fmin>4570</fmin>
+                        <strand>1</strand>
+                        <locgroup>0</locgroup>
+                        <rank>0</rank>
+
+                        <!-- FACTOR SOURCE FEATURE FOR SCAFFOLD!?! -->
+                        <srcfeature_id> <feature>
+                            <type_id><cvterm>
+                                <name>supercontig</name>
+                                <cv_id><cv><name>SO</name></cv></cv_id>
+                                <is_obsolete>0</is_obsolete>
+                                <is_relationshiptype>0</is_relationshiptype>
+                                <dbxref_id><dbxref>
+                                    <db_id><db><name>SO</name></db></db_id>
+                                    <accession>0000148</accession>
+                                </dbxref></dbxref_id>
+                            </cvterm></type_id>
+                            <organism_id><organism><genus>Aedes</genus><species>aegypti</species></organism></organism_id>
+                            <uniquename>supercont1.3238</uniquename>
+                        </feature></srcfeature_id>
+
+
+
+                </featureloc>
+
+            </feature> <!-- </subject_id> -->
+
+            <!-- </feature> --> </subject_id>
+            
+        </feature_relationship>
+
+</feature><!-- match end -->
+                                    <!-- MATCH HEADER -->
+
+<!-- seems match doesn't get featureloc or analysis score if you don't want?!? --> 
+
+<!-- ###################################### match ###################################### -->
+<!-- match : sofa id: SO:0000343 is_a: SO:0001410 experimental_feature (region which is the result of some arbitrary experimental procedure) is_a: SO:0000001 region -->
+
+    <feature>
+
+        <type_id><cvterm>                                                   <!-- f.type_id=cvterm.cvterm_id -->
+            <name>match</name>
+            <cv_id><cv><name>sequence</name></cv></cv_id>
+            <is_obsolete>0</is_obsolete>
+            <is_relationshiptype>0</is_relationshiptype>
+            <dbxref_id><dbxref>                                             <!-- SO details for match cvterm type -->
+                <db_id><db><name>SO</name></db></db_id>                    
+                <accession>0000343</accession>
+            </dbxref></dbxref_id>
+        </cvterm></type_id>
+        <organism_id><organism><genus>Computational</genus><species>Computational Result</species></organism></organism_id>
+        
+        <uniquename>supercont1.3238:hit:14250:0_0</uniquename>
+        <name>supercont1.3238:hit:14250:0_0</name>
+
+        <dbxref_id><dbxref>                                                 <!-- seems the feature also gets the same dbxref stuff... -->
+            <db_id><db><name>SO</name></db></db_id>
+            <accession>0000343</accession>
+        </dbxref></dbxref_id>
+
+        <seqlen>72</seqlen>
+
+        <is_obsolete>0</is_obsolete>
+
+        <is_analysis>1</is_analysis>                                        <!-- this is an analysis feature - now join to analysisfeature with f.feature_id as af FK -->
+        <analysisfeature><analysis_id><analysis>
+            <program>blastx:Pecor</program>
+            <programversion>1</programversion>
+            <sourcename>VectorBase</sourcename>
+            <sourceversion>unknown</sourceversion>
+        </analysis></analysis_id><!-- won't bother with rawscore?!? --></analysisfeature>
+
+
+<!-- FLYBASE PART_OF REALTIONSHIP TYPE FOR FEATURE RELATIONSHIP object_id -> subject_id -->
+
+        <feature_relationship>                                              <!-- f.feature_id=feature_relationship.oject_id -->
+            <type_id><cvterm>                                               <!-- just the details for the flybase part_of relationship -->
+                <name>proper_part_of</name>
+                <cv_id><cv><name>relationship type</name></cv></cv_id>
+                <is_obsolete>0</is_obsolete>
+                <is_relationshiptype>0</is_relationshiptype>
+                <dbxref_id><dbxref>
+                    <db_id><db><name>FlyBase_internal</name></db></db_id>
+                    <accession>relationship type:partof</accession>
+                </dbxref></dbxref_id>
+            </cvterm></type_id>
+            <rank>0</rank>                                                  <!-- is fr.rank this needed for analysis parts?!? -->
+            <subject_id> <!-- <feature> -->                                 <!-- start the nested feature fr.subject_id=f.feature_id -->
+
+                                    <!-- PART OF FEATURE subject_id -->
+
+            <!-- <subject_id> --> <feature>                                 <!-- start the nested feature fr.subject_id=f.feature_id -->
+
+                <type_id><cvterm>                                                   <!-- FlyBase seems to have a slight erorr and models subjects as match too -->
+                    <name>match</name>
+                    <cv_id><cv><name>sequence</name></cv></cv_id>
+                    <is_obsolete>0</is_obsolete>
+                    <is_relationshiptype>0</is_relationshiptype>
+                    <dbxref_id><dbxref>                                             <!-- SO details for match cvterm type -->
+                        <db_id><db><name>SO</name></db></db_id>                    
+                        <accession>0000343</accession>
+                    </dbxref></dbxref_id>
+                </cvterm></type_id>
+
+                <organism_id><organism><genus>Computational</genus><species>Computational Result</species></organism></organism_id>
+
+                <uniquename>supercont1.3238:hit:14250:0_0_unmhsp_0</uniquename>
+                <name>supercont1.3238:hit:14250:0_0_unmhsp_0</name>
+                <is_obsolete>0</is_obsolete>
+                <is_analysis>1</is_analysis>                                        <!-- this is an analysis feature - now join to analysisfeature with f.feature_id as af FK -->
+                <analysisfeature><analysis_id><analysis>
+                    <program>blastx:Pecor</program>
+                    <programversion>1</programversion>
+                    <sourcename>VectorBase</sourcename>
+                    <sourceversion>unknown</sourceversion>
+                </analysis></analysis_id><rawscore>121</rawscore></analysisfeature>
+
+<!-- THIS IS THE ORIGINAL TARGET HIT STUFF!?! e.g. Target=... -->
+
+                <featureloc>                                                        <!-- part of gets two location f.feature_id=fl.feature_id -->
+
+                    <!-- <residue_info>X</residue_info> -->
+                    <is_fmin_partial>0</is_fmin_partial>
+                    <is_fmax_partial>0</is_fmax_partial>
+                    <fmax>347</fmax>
+                    <fmin>323</fmin>
+                    <strand>1</strand>                                              <!-- it's the target... -->
+                    <locgroup>0</locgroup>
+                    <rank>1</rank>                                                  <!-- fl.rank is for when it maps multiple times?!? -->
+
+                    <srcfeature_id> <!-- <feature> -->
+
+<!-- THE TARGET HIT - prolly ought to give them the appropriate details - i.e. NOT EST!?! -->
+
+                    <!-- <srcfeature_id> --> <feature>
+
+                        
+                        <type_id><cvterm>
+                            <name>polypeptide</name>
+                            <cv_id><cv><name>sequence</name></cv></cv_id>
+                            <is_obsolete>0</is_obsolete>
+                            <is_relationshiptype>0</is_relationshiptype>
+                            <dbxref_id><dbxref>
+                                <db_id><db><name>SO</name></db></db_id>
+                                <accession>0000104</accession>
+                            </dbxref></dbxref_id>
+                        </cvterm></type_id>
+
+
+
+                        <organism_id><organism><genus>Computational</genus><species>Computational Result</species></organism></organism_id>
+
+                        <uniquename>tr|E0W1D0|E0W1D0_PEDHC</uniquename>
+
+                        <name>tr|E0W1D0|E0W1D0_PEDHC</name>                
+
+
+                        <is_analysis>1</is_analysis> <!-- JUST DON'T BOTHER GIVING THE ANALYSIS FEATURES STUFF?!?S -->
+
+                    </feature> <!-- </srcfeature_id> -->
+
+                    <!-- </feature> --> </srcfeature_id>
+
+                </featureloc>
+                
+<!-- THIS IS THE ACTUAL SCAFFOLD - will be chromosomal or scaffold!?... -->
+
+                <featureloc>
+
+                        <is_fmin_partial>0</is_fmin_partial>
+                        <is_fmax_partial>0</is_fmax_partial>
+                        <fmax>4845</fmax>
+                        <fmin>4773</fmin>
+                        <strand>1</strand>
+                        <locgroup>0</locgroup>
+                        <rank>0</rank>
+
+                        <!-- FACTOR SOURCE FEATURE FOR SCAFFOLD!?! -->
+                        <srcfeature_id> <feature>
+                            <type_id><cvterm>
+                                <name>supercontig</name>
+                                <cv_id><cv><name>SO</name></cv></cv_id>
+                                <is_obsolete>0</is_obsolete>
+                                <is_relationshiptype>0</is_relationshiptype>
+                                <dbxref_id><dbxref>
+                                    <db_id><db><name>SO</name></db></db_id>
+                                    <accession>0000148</accession>
+                                </dbxref></dbxref_id>
+                            </cvterm></type_id>
+                            <organism_id><organism><genus>Aedes</genus><species>aegypti</species></organism></organism_id>
+                            <uniquename>supercont1.3238</uniquename>
+                        </feature></srcfeature_id>
+
+
+
+                </featureloc>
+
+            </feature> <!-- </subject_id> -->
+
+            <!-- </feature> --> </subject_id>
+            
+        </feature_relationship>
+
+</feature><!-- match end -->
+                                    <!-- MATCH HEADER -->
+
+<!-- seems match doesn't get featureloc or analysis score if you don't want?!? --> 
+
+<!-- ###################################### match ###################################### -->
+<!-- match : sofa id: SO:0000343 is_a: SO:0001410 experimental_feature (region which is the result of some arbitrary experimental procedure) is_a: SO:0000001 region -->
+
+    <feature>
+
+        <type_id><cvterm>                                                   <!-- f.type_id=cvterm.cvterm_id -->
+            <name>match</name>
+            <cv_id><cv><name>sequence</name></cv></cv_id>
+            <is_obsolete>0</is_obsolete>
+            <is_relationshiptype>0</is_relationshiptype>
+            <dbxref_id><dbxref>                                             <!-- SO details for match cvterm type -->
+                <db_id><db><name>SO</name></db></db_id>                    
+                <accession>0000343</accession>
+            </dbxref></dbxref_id>
+        </cvterm></type_id>
+        <organism_id><organism><genus>Computational</genus><species>Computational Result</species></organism></organism_id>
+        
+        <uniquename>supercont1.3238:hit:14252:0_0</uniquename>
+        <name>supercont1.3238:hit:14252:0_0</name>
+
+        <dbxref_id><dbxref>                                                 <!-- seems the feature also gets the same dbxref stuff... -->
+            <db_id><db><name>SO</name></db></db_id>
+            <accession>0000343</accession>
+        </dbxref></dbxref_id>
+
+        <seqlen>4324</seqlen>
+
+        <is_obsolete>0</is_obsolete>
+
+        <is_analysis>1</is_analysis>                                        <!-- this is an analysis feature - now join to analysisfeature with f.feature_id as af FK -->
+        <analysisfeature><analysis_id><analysis>
+            <program>snap_masked</program>
+            <programversion>1</programversion>
+            <sourcename>VectorBase</sourcename>
+            <sourceversion>unknown</sourceversion>
+        </analysis></analysis_id><!-- won't bother with rawscore?!? --></analysisfeature>
+
+
+<!-- FLYBASE PART_OF REALTIONSHIP TYPE FOR FEATURE RELATIONSHIP object_id -> subject_id -->
+
+        <feature_relationship>                                              <!-- f.feature_id=feature_relationship.oject_id -->
+            <type_id><cvterm>                                               <!-- just the details for the flybase part_of relationship -->
+                <name>proper_part_of</name>
+                <cv_id><cv><name>relationship type</name></cv></cv_id>
+                <is_obsolete>0</is_obsolete>
+                <is_relationshiptype>0</is_relationshiptype>
+                <dbxref_id><dbxref>
+                    <db_id><db><name>FlyBase_internal</name></db></db_id>
+                    <accession>relationship type:partof</accession>
+                </dbxref></dbxref_id>
+            </cvterm></type_id>
+            <rank>0</rank>                                                  <!-- is fr.rank this needed for analysis parts?!? -->
+            <subject_id> <!-- <feature> -->                                 <!-- start the nested feature fr.subject_id=f.feature_id -->
+
+                                    <!-- PART OF FEATURE subject_id -->
+
+            <!-- <subject_id> --> <feature>                                 <!-- start the nested feature fr.subject_id=f.feature_id -->
+
+                <type_id><cvterm>                                                   <!-- FlyBase seems to have a slight erorr and models subjects as match too -->
+                    <name>match</name>
+                    <cv_id><cv><name>sequence</name></cv></cv_id>
+                    <is_obsolete>0</is_obsolete>
+                    <is_relationshiptype>0</is_relationshiptype>
+                    <dbxref_id><dbxref>                                             <!-- SO details for match cvterm type -->
+                        <db_id><db><name>SO</name></db></db_id>                    
+                        <accession>0000343</accession>
+                    </dbxref></dbxref_id>
+                </cvterm></type_id>
+
+                <organism_id><organism><genus>Computational</genus><species>Computational Result</species></organism></organism_id>
+
+                <uniquename>supercont1.3238:hit:14252:0_0_unmhsp_0</uniquename>
+                <name>supercont1.3238:hit:14252:0_0_unmhsp_0</name>
+                <is_obsolete>0</is_obsolete>
+                <is_analysis>1</is_analysis>                                        <!-- this is an analysis feature - now join to analysisfeature with f.feature_id as af FK -->
+                <analysisfeature><analysis_id><analysis>
+                    <program>snap_masked</program>
+                    <programversion>1</programversion>
+                    <sourcename>VectorBase</sourcename>
+                    <sourceversion>unknown</sourceversion>
+                </analysis></analysis_id><rawscore>9.547</rawscore></analysisfeature>
+
+<!-- THIS IS THE ORIGINAL TARGET HIT STUFF!?! e.g. Target=... -->
+
+                <featureloc>                                                        <!-- part of gets two location f.feature_id=fl.feature_id -->
+
+                    <!-- <residue_info>X</residue_info> -->
+                    <is_fmin_partial>0</is_fmin_partial>
+                    <is_fmax_partial>0</is_fmax_partial>
+                    <fmax>17</fmax>
+                    <fmin>0</fmin>
+                    <strand>1</strand>                                              <!-- it's the target... -->
+                    <locgroup>0</locgroup>
+                    <rank>1</rank>                                                  <!-- fl.rank is for when it maps multiple times?!? -->
+
+                    <srcfeature_id> <!-- <feature> -->
+
+<!-- THE TARGET HIT - prolly ought to give them the appropriate details - i.e. NOT EST!?! -->
+
+                    <!-- <srcfeature_id> --> <feature>
+
+                        
+                        <type_id><cvterm>
+                            <name>experimental_feature</name>
+                            <cv_id><cv><name>sequence</name></cv></cv_id>
+                            <is_obsolete>0</is_obsolete>
+                            <is_relationshiptype>0</is_relationshiptype>
+                            <dbxref_id><dbxref>
+                                <db_id><db><name>SO</name></db></db_id>
+                                <accession>0001410</accession>
+                            </dbxref></dbxref_id>
+                        </cvterm></type_id>
+
+
+
+                        <organism_id><organism><genus>Computational</genus><species>Computational Result</species></organism></organism_id>
+
+                        <uniquename>snap_masked-supercont1.3238-abinit-gene-0.1-mRNA-1</uniquename>
+
+                        <name>snap_masked-supercont1.3238-abinit-gene-0.1-mRNA-1</name>                
+
+
+                        <is_analysis>1</is_analysis> <!-- JUST DON'T BOTHER GIVING THE ANALYSIS FEATURES STUFF?!?S -->
+
+                    </feature> <!-- </srcfeature_id> -->
+
+                    <!-- </feature> --> </srcfeature_id>
+
+                </featureloc>
+                
+<!-- THIS IS THE ACTUAL SCAFFOLD - will be chromosomal or scaffold!?... -->
+
+                <featureloc>
+
+                        <is_fmin_partial>0</is_fmin_partial>
+                        <is_fmax_partial>0</is_fmax_partial>
+                        <fmax>749</fmax>
+                        <fmin>732</fmin>
+                        <strand>1</strand>
+                        <locgroup>0</locgroup>
+                        <rank>0</rank>
+
+                        <!-- FACTOR SOURCE FEATURE FOR SCAFFOLD!?! -->
+                        <srcfeature_id> <feature>
+                            <type_id><cvterm>
+                                <name>supercontig</name>
+                                <cv_id><cv><name>SO</name></cv></cv_id>
+                                <is_obsolete>0</is_obsolete>
+                                <is_relationshiptype>0</is_relationshiptype>
+                                <dbxref_id><dbxref>
+                                    <db_id><db><name>SO</name></db></db_id>
+                                    <accession>0000148</accession>
+                                </dbxref></dbxref_id>
+                            </cvterm></type_id>
+                            <organism_id><organism><genus>Aedes</genus><species>aegypti</species></organism></organism_id>
+                            <uniquename>supercont1.3238</uniquename>
+                        </feature></srcfeature_id>
+
+
+
+                </featureloc>
+
+            </feature> <!-- </subject_id> -->
+
+            <!-- </feature> --> </subject_id>
+            
+        </feature_relationship>
+
+
+<!-- FLYBASE PART_OF REALTIONSHIP TYPE FOR FEATURE RELATIONSHIP object_id -> subject_id -->
+
+        <feature_relationship>                                              <!-- f.feature_id=feature_relationship.oject_id -->
+            <type_id><cvterm>                                               <!-- just the details for the flybase part_of relationship -->
+                <name>proper_part_of</name>
+                <cv_id><cv><name>relationship type</name></cv></cv_id>
+                <is_obsolete>0</is_obsolete>
+                <is_relationshiptype>0</is_relationshiptype>
+                <dbxref_id><dbxref>
+                    <db_id><db><name>FlyBase_internal</name></db></db_id>
+                    <accession>relationship type:partof</accession>
+                </dbxref></dbxref_id>
+            </cvterm></type_id>
+            <rank>0</rank>                                                  <!-- is fr.rank this needed for analysis parts?!? -->
+            <subject_id> <!-- <feature> -->                                 <!-- start the nested feature fr.subject_id=f.feature_id -->
+
+                                    <!-- PART OF FEATURE subject_id -->
+
+            <!-- <subject_id> --> <feature>                                 <!-- start the nested feature fr.subject_id=f.feature_id -->
+
+                <type_id><cvterm>                                                   <!-- FlyBase seems to have a slight erorr and models subjects as match too -->
+                    <name>match</name>
+                    <cv_id><cv><name>sequence</name></cv></cv_id>
+                    <is_obsolete>0</is_obsolete>
+                    <is_relationshiptype>0</is_relationshiptype>
+                    <dbxref_id><dbxref>                                             <!-- SO details for match cvterm type -->
+                        <db_id><db><name>SO</name></db></db_id>                    
+                        <accession>0000343</accession>
+                    </dbxref></dbxref_id>
+                </cvterm></type_id>
+
+                <organism_id><organism><genus>Computational</genus><species>Computational Result</species></organism></organism_id>
+
+                <uniquename>supercont1.3238:hit:14252:0_0_unmhsp_1</uniquename>
+                <name>supercont1.3238:hit:14252:0_0_unmhsp_1</name>
+                <is_obsolete>0</is_obsolete>
+                <is_analysis>1</is_analysis>                                        <!-- this is an analysis feature - now join to analysisfeature with f.feature_id as af FK -->
+                <analysisfeature><analysis_id><analysis>
+                    <program>snap_masked</program>
+                    <programversion>1</programversion>
+                    <sourcename>VectorBase</sourcename>
+                    <sourceversion>unknown</sourceversion>
+                </analysis></analysis_id><rawscore>-12.759</rawscore></analysisfeature>
+
+<!-- THIS IS THE ORIGINAL TARGET HIT STUFF!?! e.g. Target=... -->
+
+                <featureloc>                                                        <!-- part of gets two location f.feature_id=fl.feature_id -->
+
+                    <!-- <residue_info>X</residue_info> -->
+                    <is_fmin_partial>0</is_fmin_partial>
+                    <is_fmax_partial>0</is_fmax_partial>
+                    <fmax>234</fmax>
+                    <fmin>17</fmin>
+                    <strand>1</strand>                                              <!-- it's the target... -->
+                    <locgroup>0</locgroup>
+                    <rank>1</rank>                                                  <!-- fl.rank is for when it maps multiple times?!? -->
+
+                    <srcfeature_id> <!-- <feature> -->
+
+<!-- THE TARGET HIT - prolly ought to give them the appropriate details - i.e. NOT EST!?! -->
+
+                    <!-- <srcfeature_id> --> <feature>
+
+                        
+                        <type_id><cvterm>
+                            <name>experimental_feature</name>
+                            <cv_id><cv><name>sequence</name></cv></cv_id>
+                            <is_obsolete>0</is_obsolete>
+                            <is_relationshiptype>0</is_relationshiptype>
+                            <dbxref_id><dbxref>
+                                <db_id><db><name>SO</name></db></db_id>
+                                <accession>0001410</accession>
+                            </dbxref></dbxref_id>
+                        </cvterm></type_id>
+
+
+
+                        <organism_id><organism><genus>Computational</genus><species>Computational Result</species></organism></organism_id>
+
+                        <uniquename>snap_masked-supercont1.3238-abinit-gene-0.1-mRNA-1</uniquename>
+
+                        <name>snap_masked-supercont1.3238-abinit-gene-0.1-mRNA-1</name>                
+
+
+                        <is_analysis>1</is_analysis> <!-- JUST DON'T BOTHER GIVING THE ANALYSIS FEATURES STUFF?!?S -->
+
+                    </feature> <!-- </srcfeature_id> -->
+
+                    <!-- </feature> --> </srcfeature_id>
+
+                </featureloc>
+                
+<!-- THIS IS THE ACTUAL SCAFFOLD - will be chromosomal or scaffold!?... -->
+
+                <featureloc>
+
+                        <is_fmin_partial>0</is_fmin_partial>
+                        <is_fmax_partial>0</is_fmax_partial>
+                        <fmax>1433</fmax>
+                        <fmin>1216</fmin>
+                        <strand>1</strand>
+                        <locgroup>0</locgroup>
+                        <rank>0</rank>
+
+                        <!-- FACTOR SOURCE FEATURE FOR SCAFFOLD!?! -->
+                        <srcfeature_id> <feature>
+                            <type_id><cvterm>
+                                <name>supercontig</name>
+                                <cv_id><cv><name>SO</name></cv></cv_id>
+                                <is_obsolete>0</is_obsolete>
+                                <is_relationshiptype>0</is_relationshiptype>
+                                <dbxref_id><dbxref>
+                                    <db_id><db><name>SO</name></db></db_id>
+                                    <accession>0000148</accession>
+                                </dbxref></dbxref_id>
+                            </cvterm></type_id>
+                            <organism_id><organism><genus>Aedes</genus><species>aegypti</species></organism></organism_id>
+                            <uniquename>supercont1.3238</uniquename>
+                        </feature></srcfeature_id>
+
+
+
+                </featureloc>
+
+            </feature> <!-- </subject_id> -->
+
+            <!-- </feature> --> </subject_id>
+            
+        </feature_relationship>
+
+
+<!-- FLYBASE PART_OF REALTIONSHIP TYPE FOR FEATURE RELATIONSHIP object_id -> subject_id -->
+
+        <feature_relationship>                                              <!-- f.feature_id=feature_relationship.oject_id -->
+            <type_id><cvterm>                                               <!-- just the details for the flybase part_of relationship -->
+                <name>proper_part_of</name>
+                <cv_id><cv><name>relationship type</name></cv></cv_id>
+                <is_obsolete>0</is_obsolete>
+                <is_relationshiptype>0</is_relationshiptype>
+                <dbxref_id><dbxref>
+                    <db_id><db><name>FlyBase_internal</name></db></db_id>
+                    <accession>relationship type:partof</accession>
+                </dbxref></dbxref_id>
+            </cvterm></type_id>
+            <rank>0</rank>                                                  <!-- is fr.rank this needed for analysis parts?!? -->
+            <subject_id> <!-- <feature> -->                                 <!-- start the nested feature fr.subject_id=f.feature_id -->
+
+                                    <!-- PART OF FEATURE subject_id -->
+
+            <!-- <subject_id> --> <feature>                                 <!-- start the nested feature fr.subject_id=f.feature_id -->
+
+                <type_id><cvterm>                                                   <!-- FlyBase seems to have a slight erorr and models subjects as match too -->
+                    <name>match</name>
+                    <cv_id><cv><name>sequence</name></cv></cv_id>
+                    <is_obsolete>0</is_obsolete>
+                    <is_relationshiptype>0</is_relationshiptype>
+                    <dbxref_id><dbxref>                                             <!-- SO details for match cvterm type -->
+                        <db_id><db><name>SO</name></db></db_id>                    
+                        <accession>0000343</accession>
+                    </dbxref></dbxref_id>
+                </cvterm></type_id>
+
+                <organism_id><organism><genus>Computational</genus><species>Computational Result</species></organism></organism_id>
+
+                <uniquename>supercont1.3238:hit:14252:0_0_unmhsp_2</uniquename>
+                <name>supercont1.3238:hit:14252:0_0_unmhsp_2</name>
+                <is_obsolete>0</is_obsolete>
+                <is_analysis>1</is_analysis>                                        <!-- this is an analysis feature - now join to analysisfeature with f.feature_id as af FK -->
+                <analysisfeature><analysis_id><analysis>
+                    <program>snap_masked</program>
+                    <programversion>1</programversion>
+                    <sourcename>VectorBase</sourcename>
+                    <sourceversion>unknown</sourceversion>
+                </analysis></analysis_id><rawscore>-27.884</rawscore></analysisfeature>
+
+<!-- THIS IS THE ORIGINAL TARGET HIT STUFF!?! e.g. Target=... -->
+
+                <featureloc>                                                        <!-- part of gets two location f.feature_id=fl.feature_id -->
+
+                    <!-- <residue_info>X</residue_info> -->
+                    <is_fmin_partial>0</is_fmin_partial>
+                    <is_fmax_partial>0</is_fmax_partial>
+                    <fmax>710</fmax>
+                    <fmin>234</fmin>
+                    <strand>1</strand>                                              <!-- it's the target... -->
+                    <locgroup>0</locgroup>
+                    <rank>1</rank>                                                  <!-- fl.rank is for when it maps multiple times?!? -->
+
+                    <srcfeature_id> <!-- <feature> -->
+
+<!-- THE TARGET HIT - prolly ought to give them the appropriate details - i.e. NOT EST!?! -->
+
+                    <!-- <srcfeature_id> --> <feature>
+
+                        
+                        <type_id><cvterm>
+                            <name>experimental_feature</name>
+                            <cv_id><cv><name>sequence</name></cv></cv_id>
+                            <is_obsolete>0</is_obsolete>
+                            <is_relationshiptype>0</is_relationshiptype>
+                            <dbxref_id><dbxref>
+                                <db_id><db><name>SO</name></db></db_id>
+                                <accession>0001410</accession>
+                            </dbxref></dbxref_id>
+                        </cvterm></type_id>
+
+
+
+                        <organism_id><organism><genus>Computational</genus><species>Computational Result</species></organism></organism_id>
+
+                        <uniquename>snap_masked-supercont1.3238-abinit-gene-0.1-mRNA-1</uniquename>
+
+                        <name>snap_masked-supercont1.3238-abinit-gene-0.1-mRNA-1</name>                
+
+
+                        <is_analysis>1</is_analysis> <!-- JUST DON'T BOTHER GIVING THE ANALYSIS FEATURES STUFF?!?S -->
+
+                    </feature> <!-- </srcfeature_id> -->
+
+                    <!-- </feature> --> </srcfeature_id>
+
+                </featureloc>
+                
+<!-- THIS IS THE ACTUAL SCAFFOLD - will be chromosomal or scaffold!?... -->
+
+                <featureloc>
+
+                        <is_fmin_partial>0</is_fmin_partial>
+                        <is_fmax_partial>0</is_fmax_partial>
+                        <fmax>2742</fmax>
+                        <fmin>2266</fmin>
+                        <strand>1</strand>
+                        <locgroup>0</locgroup>
+                        <rank>0</rank>
+
+                        <!-- FACTOR SOURCE FEATURE FOR SCAFFOLD!?! -->
+                        <srcfeature_id> <feature>
+                            <type_id><cvterm>
+                                <name>supercontig</name>
+                                <cv_id><cv><name>SO</name></cv></cv_id>
+                                <is_obsolete>0</is_obsolete>
+                                <is_relationshiptype>0</is_relationshiptype>
+                                <dbxref_id><dbxref>
+                                    <db_id><db><name>SO</name></db></db_id>
+                                    <accession>0000148</accession>
+                                </dbxref></dbxref_id>
+                            </cvterm></type_id>
+                            <organism_id><organism><genus>Aedes</genus><species>aegypti</species></organism></organism_id>
+                            <uniquename>supercont1.3238</uniquename>
+                        </feature></srcfeature_id>
+
+
+
+                </featureloc>
+
+            </feature> <!-- </subject_id> -->
+
+            <!-- </feature> --> </subject_id>
+            
+        </feature_relationship>
+
+
+<!-- FLYBASE PART_OF REALTIONSHIP TYPE FOR FEATURE RELATIONSHIP object_id -> subject_id -->
+
+        <feature_relationship>                                              <!-- f.feature_id=feature_relationship.oject_id -->
+            <type_id><cvterm>                                               <!-- just the details for the flybase part_of relationship -->
+                <name>proper_part_of</name>
+                <cv_id><cv><name>relationship type</name></cv></cv_id>
+                <is_obsolete>0</is_obsolete>
+                <is_relationshiptype>0</is_relationshiptype>
+                <dbxref_id><dbxref>
+                    <db_id><db><name>FlyBase_internal</name></db></db_id>
+                    <accession>relationship type:partof</accession>
+                </dbxref></dbxref_id>
+            </cvterm></type_id>
+            <rank>0</rank>                                                  <!-- is fr.rank this needed for analysis parts?!? -->
+            <subject_id> <!-- <feature> -->                                 <!-- start the nested feature fr.subject_id=f.feature_id -->
+
+                                    <!-- PART OF FEATURE subject_id -->
+
+            <!-- <subject_id> --> <feature>                                 <!-- start the nested feature fr.subject_id=f.feature_id -->
+
+                <type_id><cvterm>                                                   <!-- FlyBase seems to have a slight erorr and models subjects as match too -->
+                    <name>match</name>
+                    <cv_id><cv><name>sequence</name></cv></cv_id>
+                    <is_obsolete>0</is_obsolete>
+                    <is_relationshiptype>0</is_relationshiptype>
+                    <dbxref_id><dbxref>                                             <!-- SO details for match cvterm type -->
+                        <db_id><db><name>SO</name></db></db_id>                    
+                        <accession>0000343</accession>
+                    </dbxref></dbxref_id>
+                </cvterm></type_id>
+
+                <organism_id><organism><genus>Computational</genus><species>Computational Result</species></organism></organism_id>
+
+                <uniquename>supercont1.3238:hit:14252:0_0_unmhsp_3</uniquename>
+                <name>supercont1.3238:hit:14252:0_0_unmhsp_3</name>
+                <is_obsolete>0</is_obsolete>
+                <is_analysis>1</is_analysis>                                        <!-- this is an analysis feature - now join to analysisfeature with f.feature_id as af FK -->
+                <analysisfeature><analysis_id><analysis>
+                    <program>snap_masked</program>
+                    <programversion>1</programversion>
+                    <sourcename>VectorBase</sourcename>
+                    <sourceversion>unknown</sourceversion>
+                </analysis></analysis_id><rawscore>15.032</rawscore></analysisfeature>
+
+<!-- THIS IS THE ORIGINAL TARGET HIT STUFF!?! e.g. Target=... -->
+
+                <featureloc>                                                        <!-- part of gets two location f.feature_id=fl.feature_id -->
+
+                    <!-- <residue_info>X</residue_info> -->
+                    <is_fmin_partial>0</is_fmin_partial>
+                    <is_fmax_partial>0</is_fmax_partial>
+                    <fmax>735</fmax>
+                    <fmin>710</fmin>
+                    <strand>1</strand>                                              <!-- it's the target... -->
+                    <locgroup>0</locgroup>
+                    <rank>1</rank>                                                  <!-- fl.rank is for when it maps multiple times?!? -->
+
+                    <srcfeature_id> <!-- <feature> -->
+
+<!-- THE TARGET HIT - prolly ought to give them the appropriate details - i.e. NOT EST!?! -->
+
+                    <!-- <srcfeature_id> --> <feature>
+
+                        
+                        <type_id><cvterm>
+                            <name>experimental_feature</name>
+                            <cv_id><cv><name>sequence</name></cv></cv_id>
+                            <is_obsolete>0</is_obsolete>
+                            <is_relationshiptype>0</is_relationshiptype>
+                            <dbxref_id><dbxref>
+                                <db_id><db><name>SO</name></db></db_id>
+                                <accession>0001410</accession>
+                            </dbxref></dbxref_id>
+                        </cvterm></type_id>
+
+
+
+                        <organism_id><organism><genus>Computational</genus><species>Computational Result</species></organism></organism_id>
+
+                        <uniquename>snap_masked-supercont1.3238-abinit-gene-0.1-mRNA-1</uniquename>
+
+                        <name>snap_masked-supercont1.3238-abinit-gene-0.1-mRNA-1</name>                
+
+
+                        <is_analysis>1</is_analysis> <!-- JUST DON'T BOTHER GIVING THE ANALYSIS FEATURES STUFF?!?S -->
+
+                    </feature> <!-- </srcfeature_id> -->
+
+                    <!-- </feature> --> </srcfeature_id>
+
+                </featureloc>
+                
+<!-- THIS IS THE ACTUAL SCAFFOLD - will be chromosomal or scaffold!?... -->
+
+                <featureloc>
+
+                        <is_fmin_partial>0</is_fmin_partial>
+                        <is_fmax_partial>0</is_fmax_partial>
+                        <fmax>5056</fmax>
+                        <fmin>5031</fmin>
+                        <strand>1</strand>
+                        <locgroup>0</locgroup>
+                        <rank>0</rank>
+
+                        <!-- FACTOR SOURCE FEATURE FOR SCAFFOLD!?! -->
+                        <srcfeature_id> <feature>
+                            <type_id><cvterm>
+                                <name>supercontig</name>
+                                <cv_id><cv><name>SO</name></cv></cv_id>
+                                <is_obsolete>0</is_obsolete>
+                                <is_relationshiptype>0</is_relationshiptype>
+                                <dbxref_id><dbxref>
+                                    <db_id><db><name>SO</name></db></db_id>
+                                    <accession>0000148</accession>
+                                </dbxref></dbxref_id>
+                            </cvterm></type_id>
+                            <organism_id><organism><genus>Aedes</genus><species>aegypti</species></organism></organism_id>
+                            <uniquename>supercont1.3238</uniquename>
+                        </feature></srcfeature_id>
+
+
+
+                </featureloc>
+
+            </feature> <!-- </subject_id> -->
+
+            <!-- </feature> --> </subject_id>
+            
+        </feature_relationship>
+
+</feature><!-- match end --></chado>

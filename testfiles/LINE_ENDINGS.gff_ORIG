@@ -1,4 +1,3 @@
-scaffold:1:Yb_superscaffold:1:1333114:1	HGC	contig	1	1333114	.	.	.	ID=Yb_superscaffold;molecule_type=dsDNA;GenBank:scaffold:1:Yb_superscaffold:1:1333114:1;translation_table=1;topology=linear;localization=chromosomal
 Yb_superscaffold	HGC	gene	2219	25547	.	-	.	ID=HMEL002000;Name=HMEL002000
 Yb_superscaffold	HGC	mRNA	2219	25547	.	-	.	ID=HMEL002000-RA;Name=HMEL002000-RA;Parent=HMEL002000
 Yb_superscaffold	HGC	exon	25204	25547	.	-	.	ID=HMEL002000-RA-E1A;Parent=HMEL002000-RA
@@ -36,7 +35,6 @@ Yb_superscaffold	HGC	CDS	22935	23062	.	-	0	Parent=HMEL002000-RB
 Yb_superscaffold	HGC	CDS	7840	7971	.	-	1	Parent=HMEL002000-RB
 Yb_superscaffold	HGC	CDS	7188	7527	.	-	1	Parent=HMEL002000-RB
 Yb_superscaffold	HGC	CDS	6840	7059	.	-	0	Parent=HMEL002000-RB
->fdslangf
 Yb_superscaffold	HGC	CDS	6327	6501	.	-	2	Parent=HMEL002000-RB
 Yb_superscaffold	HGC	CDS	6075	6202	.	-	1	Parent=HMEL002000-RB
 Yb_superscaffold	HGC	CDS	5233	5415	.	-	2	Parent=HMEL002000-RB

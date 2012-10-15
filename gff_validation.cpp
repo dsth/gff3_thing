@@ -1,3 +1,5 @@
+// g++ -g -std=c++0x gff_validation.cpp -lboost_regex -DCAPMON_EXT `mysql_config --libs` utils.o -lboost_system -lboost_filesystem -lssl ; ./a.out
+// g++ -g -std=c++0x gff_validation.cpp -lboost_regex ; ./a.out
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -28,19 +30,22 @@ toolz::MYSQL_ADAPTOR* toolz::MYSQL_ADAPTOR::me_ptr = 0;
 
 #define MAX_ID_LENGTH 50
 
-#define STAMPIT(x) cout << #x << x << "\n";
+bool check_capmon_bool_test (const char*, std::string&, DB_PARAMS* dbp=0);
 
-// !g++-4.5 -std=c++0x % -E | grep check_raw_consistency_tests
-// #define TESTIT(x) cout << "checking " << #x << "\n"; check_raw_consistency_tests (x, report);
+// #define STAMPIT(x) cout << #x << x << "\n";
+
+// !g++-4.5 -std=c++0x % -E | grep check_raw_bitflag_consistency_tests
+// #define TESTIT(x) cout << "checking " << #x << "\n"; check_raw_bitflag_consistency_tests (x, report);
 // TESTIT(OVERLAPPING_EXONS);
-// cout << "checking " << "OVERLAPPING_EXONS" << "\n"; check_raw_consistency_tests ((1<<29), report);;
+// cout << "checking " << "OVERLAPPING_EXONS" << "\n"; check_raw_bitflag_consistency_tests ((1<<29), report);;
 
-// #define TESTIT(x) cout << "checking " #x << "\n"; check_raw_consistency_tests (#x, report)==x
-// cout << "checking " << "OVERLAPPING_EXONS" << "\n"; check_raw_consistency_tests ((1<<29), report);;
+// #define TESTIT(x) cout << "checking " #x << "\n"; check_raw_bitflag_consistency_tests (#x, report)==x
+// cout << "checking " << "OVERLAPPING_EXONS" << "\n"; check_raw_bitflag_consistency_tests ((1<<29), report);;
 
-#define TESTIT(x,y) cout << "checking " #x << "\n"; assert(check_raw_consistency_tests (#x, report)==x|y)
+#define TESTIT(x,y) cout << "checking " #x << "\n"; assert(check_raw_bitflag_consistency_tests (#x, report)==x|y)
 
-#define CHECKIT(x) cout << "\n> checking file " #x ".gff : \n"; bitflag = check_raw_consistency_tests (#x, report); cout << #x " =\n\t" << std::bitset<sizeof(long long)*8>(x) << "\n"
+#define CHECKIT(x) cout << "\n> checking file " #x ".gff : \n"; bitflag = check_raw_bitflag_consistency_tests (#x, report); cout << #x " =\n\t" << std::bitset<sizeof(long long)*8>(x) << "\n"
+
 
 /// perhaps use unordered_map (transcripts) and unordered_multimap (cds/exon)?!? 
 
@@ -62,8 +67,8 @@ typedef boost::smatch smatch;
 typedef feature_min feature;
 typedef unsigned long long unsignedll;
 
-unsignedll check_raw_consistency_tests (const char*, std::string&, DB_PARAMS* dbp = 0);
-// unsigned long long check_raw_consistency_tests (const char*, std::string&, DB_PARAMS* = 0);
+unsignedll check_raw_bitflag_consistency_tests (const char*, std::string&, DB_PARAMS* dbp = 0);
+// unsigned long long check_raw_bitflag_consistency_tests (const char*, std::string&, DB_PARAMS* = 0);
 
 // must put back check for non-unique names?!?
 struct name_holder {
@@ -226,7 +231,8 @@ static unsigned long long PROBLEM = ( EXCESS_GENE_CONSISTENCY_PROB | EXCESS_TRAN
     | EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB | EXCESS_CDS_EXON_CONSISTENCY_PROB | ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE 
     | PARENT_WITHOUT_ID_NOT_CDS_EXON | UNKNOWN_SCAFFOLD|NON_PERMITTED_BIOTYPES | NEGATIVE_COORDINATES 
     | NON_UNIQUE_ID | EMBL_FORMAT | GFF_FASTA_HEADER | FASTA_HEADER | PARTIAL_MODEL
-    | NO_FEATLINES | NO_GENES | NO_EXON_CDS | NO_TRANSCRIPTS | TRANSCRIPT_LACKS_EXONS );
+    | NO_FEATLINES | NO_GENES | NO_EXON_CDS | NO_TRANSCRIPTS | TRANSCRIPT_LACKS_EXONS 
+    | OVERLAPPING_EXONS | LINES_WO_9COLS | PROTEIN_CODING_LACKS_CDS );
 
 // PROBLEM = ~PROBLEM;
 // static unsigned long long NO_CDS_AND_NO_PSEUDOGENES = ( CDS_PRESENT | PSEUDOGENES_PRESENT );
@@ -309,7 +315,7 @@ unsigned long long gff_basic_validation_1a_gff_parse (const char* filename, std:
     smatch match_obj2;
 
     std::ifstream in(filename);
-    if(in == 0) throw runtime_error("problem opening gff file");
+    if(in == 0) throw runtime_error("problem opening gff file : " + std::string(filename));
 
     // redundant : std::set<std::string> transcript_parents;
     // redundant : std::set<std::string> transcript_ids;
@@ -627,89 +633,25 @@ unsigned long long gff_basic_validation_1b_gff_name_checks (unsigned long long b
 //fend
 
     if (dbp) { 
-
 #ifdef CAPMON_EXT
-
-        cout << "using adaptor\n";
         toolz::MYSQL_ADAPTOR::connect(*dbp);
 
-
-        cout << "using legacy thing\n";
         for (std::set<std::string>::iterator sit = nh.scaffolds.begin() ; sit != nh.scaffolds.end() ; sit++) { // prolly ought to be a functor...
             char qbuf[STRING_SIZE]; // (2)  sprintf...
             sprintf(qbuf, SPRINTF_STRING, sit->c_str());
-            std::string count = toolz::MYSQL_ADAPTOR::get_instance()->generic_query<std::string>(qbuf);
-            if (std::stoi(count) == 0) {
+
+            if (toolz::MYSQL_ADAPTOR::get_instance()->generic_query<int>(qbuf) == 0) {
+            // if (std::stoi(count) == 0) {
                 strstrm << "<p>There is no scaffold named " << sit->c_str() << " in cap db</p>\n";
                 bitflag |= UNKNOWN_SCAFFOLD;
             }
         }
 
-        // toolz::MYSQL_ADAPTOR::disconnect();
-
+        toolz::MYSQL_ADAPTOR::disconnect();
     // cout << "\n[1c] scaffold name checks\n";
-
-//fstart 
-
-///  the mysql part - i.e. e! dependent checks are purely about scaffolds being known - i.e. non-coding cds is via loader?!?
-/// either way these are fairly simple to go from either flat-file of db but need to be separate to stop dependencies
-/// just required std::set<std::string>::iterator of names to check for?!?
-
-    try {
-
-        MYSQL *conn;
-        MYSQL_RES *result;
-        MYSQL_ROW row;
-        MYSQL_FIELD *field;
-        conn = mysql_init(NULL);
-
-        if(mysql_real_connect(conn,dbp->host(),dbp->user(),dbp->pass(),dbp->dbname(),dbp->port(),NULL,0) == NULL)
-          throw MySqlError("couldn't connect to database. exiting.");
-
-        for (std::set<std::string>::iterator sit = nh.scaffolds.begin() ; sit != nh.scaffolds.end() ; sit++) { // prolly ought to be a functor...
-
-            // options: (1) bind parameters/statement prepare - but the actual binding part is pretty darned ugly!?! - http://dev.mysql.com/doc/refman/5.0/en/mysql-stmt-execute.html
-            // http://dev.mysql.com/doc/refman/5.0/en/mysql-stmt-execute.html
-            char qbuf[STRING_SIZE]; // (2)  sprintf...
-            sprintf(qbuf, SPRINTF_STRING, sit->c_str());
-
-            if (mysql_query(conn,qbuf))
-              throw MySqlError("unable to access seq_region table - is this really a e!/cap db?!?");
-
-            if(!(result = mysql_store_result(conn))) { //y get the result set
-                throw runtime_error ("unable to query database for seq_region!");
-            } else {
-                row = mysql_fetch_row(result);
-                /// if just selecting then this would indicate no entry - but that's not v. safe
-                /// better to do a count which guarantees a result and allows other f'ups to be distinguished
-                if (row == 0) {
-                    throw runtime_error ("null pointer returned on db query!");
-                } else {
-                    if (atoi(row[0]) == 0) {
-                        strstrm << "<p>There is no scaffold named " << sit->c_str() << " in cap db</p>\n";
-                        bitflag |= UNKNOWN_SCAFFOLD;
-                    }
-                }
-            }
-            mysql_free_result(result);
-        }
-        ///y freeing here will give invalid ponters!?! - duh
-        mysql_close(conn);
-
-    } catch (std::runtime_error e) {
-        std::string prob("Exception thrown : ");
-        throw; // propagate up...
-    }
-
-//fend
-
 #else
-
-    cout << "\n[1c] MUST compile with CAPMON_EXT for scaffold name checks aagainst mysql/e! db instance\n";
-
+        cout << "\n[1c] MUST compile with CAPMON_EXT for scaffold name checks aagainst mysql/e! db instance\n";
 #endif
-
-
     }
 
     return bitflag;
@@ -833,7 +775,7 @@ void gff_basic_validation_1x_file_cleanup (unsigned long long bitflag,const char
 
 ///y local copy cleanup?!?
 
-    cout << "\n[1x] file cleanup\n";
+    // cout << "\n[1x] file cleanup\n";
 
 //fstart
 
@@ -891,10 +833,10 @@ unsigned long long generic_validation_and_store (const char* filename, std::stri
     // STAMPIT(error_types[3]);
     // STAMPIT(OVERLAPPING_EXONS);
     // TESTIT(OVERLAPPING_EXONS,CDS_PRESENT);
-    // long long int = bitflag check_raw_consistency_tests ("OVERLAPPING_EXONS", report)
-    // unsigned long long bitflag = check_raw_consistency_tests ("FINE", report);
+    // long long int = bitflag check_raw_bitflag_consistency_tests ("OVERLAPPING_EXONS", report)
+    // unsigned long long bitflag = check_raw_bitflag_consistency_tests ("FINE", report);
     // cout << "\n\n";
-    // unsigned long long bitflag = check_raw_consistency_tests ("OVERLAPPING_EXONS", report);
+    // unsigned long long bitflag = check_raw_bitflag_consistency_tests ("OVERLAPPING_EXONS", report);
     //     cout << "bitflag = " << std::bitset<sizeof(long long)*8>(bitflag) << " = " << std::hex << bitflag << "\n";
     // for (long long i = 0x800000 ; ...
 
@@ -919,7 +861,7 @@ bool validation_tests (std::string& report) {
 
     unsignedll bitflag=0;
 
-//    bitflag = check_raw_consistency_tests("NO_FEATLINES",report);
+//    bitflag = check_raw_bitflag_consistency_tests("NO_FEATLINES",report);
 //    cout << "return value =\n\t" << std::bitset<sizeof(long long)*8>(bitflag) << "\n";
 //    for (int i = 0 ; i < sizeof(long long)*8 ; i++) if (int x = bitflag&(1ull<<i)) cout << " Active bit from return " << std::dec << i << "\n"; //  << " and " << x << "\n";
 //    cout << "\n";
@@ -927,7 +869,7 @@ bool validation_tests (std::string& report) {
 
 /////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!? - presumably due to operator '==' having higher binding precendence that bitwise or '|'
 
-    // bitflag = check_raw_consistency_tests("NAMES_HAVE_SPACES",report);
+    // bitflag = check_raw_bitflag_consistency_tests("NAMES_HAVE_SPACES",report);
     // cout << "return value =\n\t" << std::bitset<sizeof(long long)*8>(bitflag) << "\n";
     // for (int i = 0 ; i < sizeof(long long)*8 ; i++) if (int x = bitflag&(1ull<<i)) cout << " Active bit from return " << std::dec << i << "\n"; //  << " and " << x << "\n";
 
@@ -935,109 +877,173 @@ bool validation_tests (std::string& report) {
 {
 
     //y get to the bottom of the vanishing temporaries with inlined member functions using pointers?!?
-    DB_PARAMS dbpnew("mysql-eg-devel-3.ebi.ac.uk","ensrw","scr1b3d3",4208,"dsth_CapDb_Mar07_anopheles_gambiae_core_13_66_3");
     // DB_PARAMS dbpnew(std::string("DBI:mysql:database=dsth_CapDb_Mar07_anopheles_gambiae_core_13_66_3;host=mysql-eg-devel-3.ebi.ac.uk;port=4208,ensrw,scr1b3d3"));
     //std::string s("DBI:mysql:database=dsth_CapDb_Mar06_anopheles_gambiae_core_13_66_3;host=mysql-eg-devel-3.ebi.ac.uk;port=4208,ensrw,scr1b3d3");
-    ///DB_PARAMS dbpnew(s);
-    assert( check_raw_consistency_tests("UNKNOWN_SCAFFOLD",report, &dbpnew) == UNKNOWN_SCAFFOLD);
-    assert( check_raw_consistency_tests("UNKNOWN_SCAFFOLD_2KNOWNNAME",report, &dbpnew) == 0);
+    DB_PARAMS dbpnew("mysql-eg-devel-3.ebi.ac.uk","ensrw","scr1b3d3",4208,"dsth_CapDb_Mar07_anopheles_gambiae_core_13_66_3");
+    assert( check_raw_bitflag_consistency_tests("UNKNOWN_SCAFFOLD",report, &dbpnew) == UNKNOWN_SCAFFOLD);
+    assert( check_raw_bitflag_consistency_tests("UNKNOWN_SCAFFOLD_2KNOWNNAME",report, &dbpnew) == 0);
+
+    assert ( check_capmon_bool_test ("UNKNOWN_SCAFFOLD",report, &dbpnew) == false );
+    assert ( check_capmon_bool_test ("UNKNOWN_SCAFFOLD_2KNOWNNAME",report, &dbpnew) == true );
 
 }
+    
+    /// do not hand these a DB_PARAM object as it will trigger scaffold name lookup?!? - for FUCK sake - you were fucking it on the scfnames check by handing it a dbp object?!?!
+    // assert (capmon_gff_validation ("testfiles/FINE.gff", report) == true);
+
+    assert ( check_capmon_bool_test ("FINE",report) == true );
+    assert ( check_capmon_bool_test ("NON_PERMITTED_BIOTYPES",report) == false );
+    assert ( check_capmon_bool_test ("NAMES_HAVE_SPACES",report) == true );
+    assert ( check_capmon_bool_test ("LINE_ENDINGS",report) == true );
+    assert ( check_capmon_bool_test ("NON_PRINTING_X0D",report) == true );
+    assert ( check_capmon_bool_test ("APOLLO_SCF_NAMES",report) == true );
+    assert ( check_capmon_bool_test ("LINES_WO_9COLS",report) == false );
+    assert ( check_capmon_bool_test ("EXCESS_GENE_CONSISTENCY_PROB",report) == false );
+    assert ( check_capmon_bool_test ("EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB",report) == false );
+    assert ( check_capmon_bool_test ("EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB",report) == false );
+//    assert ( check_capmon_bool_test ("EXCESS_CDS_EXON_CONSISTENCY_PROB",report) == false );
+    assert ( check_capmon_bool_test ("NON_PERMITTED_BIOTYPES",report) == false );
+    assert ( check_capmon_bool_test ("OVERLAPPING_EXONS",report) == false );
+    assert ( check_capmon_bool_test ("ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE",report) == false );
+    assert ( check_capmon_bool_test ("NON_UNIQUE_ID",report) == false );
+
+    assert ( check_capmon_bool_test ("PARENT_WITHOUT_ID_NOT_CDS_EXON",report) == false );
+    assert ( check_capmon_bool_test ("NEGATIVE_COORDINATES",report) == false );
+    assert ( check_capmon_bool_test ("BLANK_LINES",report) == true );
+    assert ( check_capmon_bool_test ("PSEUDOGENES_PRESENT",report) == true );
+    // assert ( check_capmon_bool_test ("NO_CDS",report) == true ); // not really relevant anymore?!?
+    assert ( check_capmon_bool_test ("EMBL_FORMAT",report) == false );
+    assert ( check_capmon_bool_test ("GFF_FASTA_HEADER",report) == false );
+    assert ( check_capmon_bool_test ("FASTA_HEADER",report) == false );
+    assert ( check_capmon_bool_test ("PARTIAL_MODEL",report) == false );
+    assert ( check_capmon_bool_test ("NO_FEATLINES",report) == false );
+    assert ( check_capmon_bool_test ("NO_GENES",report) == false );
+    assert ( check_capmon_bool_test ("NO_EXON_CDS",report) == false );
+    assert ( check_capmon_bool_test ("NO_TRANSCRIPTS",report) == false );
+    assert ( check_capmon_bool_test ("TRANSCRIPT_LACKS_EXONS",report) == false );
+    assert ( check_capmon_bool_test ("PROTEIN_CODING_LACKS_CDS",report) == false );
+    assert ( check_capmon_bool_test ("OVERLAPPING_EXONS",report) == false );
+
+    // these tests will modify the file!?
+    if(system("cp testfiles/NAMES_HAVE_SPACES.gff_ORIG testfiles/NAMES_HAVE_SPACES.gff")!=0) throw runtime_error("couldn't copy file!?!");
+    if(system("cp testfiles/APOLLO_SCF_NAMES.gff_ORIG testfiles/APOLLO_SCF_NAMES.gff")!=0) throw runtime_error("couldn't copy file!?!");
+    if(system("cp testfiles/LINE_ENDINGS.gff_ORIG testfiles/LINE_ENDINGS.gff")!=0) throw runtime_error("couldn't copy file!?!");
+    if(system("cp testfiles/NON_PRINTING_X0D.gff_ORIG testfiles/NON_PRINTING_X0D.gff")!=0) throw runtime_error("couldn't copy file!?!");
+    if(system("cp testfiles/GFF_FASTA_HEADER.gff_ORIG testfiles/GFF_FASTA_HEADER.gff")!=0) throw runtime_error("couldn't copy file!?!");
+    if(system("cp testfiles/FASTA_HEADER.gff_ORIG testfiles/FASTA_HEADER.gff")!=0) throw runtime_error("couldn't copy file!?!");
+    if(system("cp testfiles/EMBL_FORMAT.gff_ORIG testfiles/EMBL_FORMAT.gff")!=0) throw runtime_error("couldn't copy file!?!");
+
 #endif
 
-    assert( check_raw_consistency_tests("FINE",report) == 0);
+    //  bitflag = check_raw_bitflag_consistency_tests("GFF_FASTA_HEADER",report); cout << "return value =\n\t" << std::bitset<sizeof(long long)*8>(bitflag) << "\n"; for (int i = 0 ; i < sizeof(long long)*8 ; i++) if (int x = bitflag&(1ull<<i)) cout << " Active bit from return " << std::dec << i << "\n"; //  << " and " << x << "\n";
 
-    assert( check_raw_consistency_tests("NON_PERMITTED_BIOTYPES",report) == (NON_PERMITTED_BIOTYPES|PARENT_WITHOUT_ID_NOT_CDS_EXON) );
-    assert( check_raw_consistency_tests("NON_PERMITTED_BIOTYPES",report) != (PARENT_WITHOUT_ID_NOT_CDS_EXON) );
 
-    assert( check_raw_consistency_tests("LINES_WO_9COLS",report) == LINES_WO_9COLS); // 8 col
-    assert( check_raw_consistency_tests("LINES_WO_9COLS_2STRAND",report) == LINES_WO_9COLS); // 8 col
-    assert( check_raw_consistency_tests("LINES_WO_9COLS_3SEQ",report) == (LINES_WO_9COLS|LINE_ENDINGS) ); // 8 col
+    assert( check_raw_bitflag_consistency_tests("FINE",report) == 0);
 
-    assert( check_raw_consistency_tests("OVERLAPPING_EXONS",report) == OVERLAPPING_EXONS );
 
-    assert( check_raw_consistency_tests("ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE",report) == (NON_PERMITTED_BIOTYPES|ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE) );
-    assert( check_raw_consistency_tests("ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE",report) != (NON_PERMITTED_BIOTYPES) );
-    assert( check_raw_consistency_tests("ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE",report) != (0x8) );
+    assert( check_raw_bitflag_consistency_tests("NON_PERMITTED_BIOTYPES",report) == (NON_PERMITTED_BIOTYPES|PARENT_WITHOUT_ID_NOT_CDS_EXON) );
+    assert( check_raw_bitflag_consistency_tests("NON_PERMITTED_BIOTYPES",report) != (PARENT_WITHOUT_ID_NOT_CDS_EXON) );
 
-    assert( check_raw_consistency_tests("NON_UNIQUE_ID",report) == NON_UNIQUE_ID ); // at mRNA level
-    assert( check_raw_consistency_tests("NON_UNIQUE_ID_2EXON",report) == OVERLAPPING_EXONS ); // duplicated an exon
-    assert( check_raw_consistency_tests("NON_UNIQUE_ID_3GENE",report) == NON_UNIQUE_ID ); // at gene level
+    assert( check_raw_bitflag_consistency_tests("LINES_WO_9COLS",report) == LINES_WO_9COLS); // 8 col
+    assert( check_raw_bitflag_consistency_tests("LINES_WO_9COLS_2STRAND",report) == LINES_WO_9COLS); // 8 col
+    assert( check_raw_bitflag_consistency_tests("LINES_WO_9COLS_3SEQ",report) == (LINES_WO_9COLS|LINE_ENDINGS) ); // 8 col
 
-    assert( check_raw_consistency_tests("NEGATIVE_COORDINATES",report) == NEGATIVE_COORDINATES ); // at mRNA level
-    assert( check_raw_consistency_tests("NEGATIVE_COORDINATES_2END",report) == NEGATIVE_COORDINATES ); // at mRNA level
-    assert( check_raw_consistency_tests("NEGATIVE_COORDINATES_3BOTH",report) == NEGATIVE_COORDINATES ); // at mRNA level
-    assert( check_raw_consistency_tests("NEGATIVE_COORDINATES_3BOTH",report) != 0x80 );
+    assert( check_raw_bitflag_consistency_tests("OVERLAPPING_EXONS",report) == OVERLAPPING_EXONS );
 
-    assert( check_raw_consistency_tests("BLANK_LINES",report) == BLANK_LINES );
+    assert( check_raw_bitflag_consistency_tests("ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE",report) == (NON_PERMITTED_BIOTYPES|ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE) );
+    assert( check_raw_bitflag_consistency_tests("ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE",report) != (NON_PERMITTED_BIOTYPES) );
+    assert( check_raw_bitflag_consistency_tests("ID_WITHOUT_PARENT_NOT_GENE_PSEUDOGENE",report) != (0x8) );
 
-    assert( check_raw_consistency_tests("APOLLO_SCF_NAMES",report) == APOLLO_SCF_NAMES ); // a bit restrictive - uses scaffold names of form \w+\d and then the coords?!?
+    assert( check_raw_bitflag_consistency_tests("NON_UNIQUE_ID",report) == NON_UNIQUE_ID ); // at mRNA level
+    assert( check_raw_bitflag_consistency_tests("NON_UNIQUE_ID_2EXON",report) == OVERLAPPING_EXONS ); // duplicated an exon
+    assert( check_raw_bitflag_consistency_tests("NON_UNIQUE_ID_3GENE",report) == NON_UNIQUE_ID ); // at gene level
 
-    assert( check_raw_consistency_tests("LINE_ENDINGS",report) == LINE_ENDINGS );
+    assert( check_raw_bitflag_consistency_tests("NEGATIVE_COORDINATES",report) == NEGATIVE_COORDINATES ); // at mRNA level
+    assert( check_raw_bitflag_consistency_tests("NEGATIVE_COORDINATES_2END",report) == NEGATIVE_COORDINATES ); // at mRNA level
+    assert( check_raw_bitflag_consistency_tests("NEGATIVE_COORDINATES_3BOTH",report) == NEGATIVE_COORDINATES ); // at mRNA level
+    assert( check_raw_bitflag_consistency_tests("NEGATIVE_COORDINATES_3BOTH",report) != 0x80 );
 
-    assert( check_raw_consistency_tests("NO_GENES",report) == (EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB|NO_GENES) );
-    assert( check_raw_consistency_tests("NO_GENES",report) != (EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB) );
-    assert( check_raw_consistency_tests("NO_GENES",report) != 0 );
+    assert( check_raw_bitflag_consistency_tests("BLANK_LINES",report) == BLANK_LINES );
 
-    assert( check_raw_consistency_tests("NO_CDS",report) == (NO_CDS|PROTEIN_CODING_LACKS_CDS) ); // this was only really used with pseudogene thing but not relevant now with PROTEIN_CODING_LACKS_CDS
-    assert( check_raw_consistency_tests("NO_CDS",report) != (PROTEIN_CODING_LACKS_CDS) ); 
+    if(system("cp testfiles/APOLLO_SCF_NAMES.gff_ORIG testfiles/APOLLO_SCF_NAMES.gff")!=0) throw runtime_error("couldn't copy file!?!");
+    assert( check_raw_bitflag_consistency_tests("APOLLO_SCF_NAMES",report) == APOLLO_SCF_NAMES ); // a bit restrictive - uses scaffold names of form \w+\d and then the coords?!?
 
-    assert( check_raw_consistency_tests("PARTIAL_MODEL",report) == PARTIAL_MODEL );
-    assert( check_raw_consistency_tests("PARTIAL_MODEL_2ENDPOS",report) == PARTIAL_MODEL );
-    assert( check_raw_consistency_tests("PARTIAL_MODEL_2ENDPOS",report) != 0x800 );
+    if(system("cp testfiles/LINE_ENDINGS.gff_ORIG testfiles/LINE_ENDINGS.gff")!=0) throw runtime_error("couldn't copy file!?!");
+    assert( check_raw_bitflag_consistency_tests("LINE_ENDINGS",report) == LINE_ENDINGS );
 
-    assert( check_raw_consistency_tests("GFF_FASTA_HEADER",report) == (LINE_ENDINGS|GFF_FASTA_HEADER) );
+    assert( check_raw_bitflag_consistency_tests("NO_GENES",report) == (EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB|NO_GENES) );
+    assert( check_raw_bitflag_consistency_tests("NO_GENES",report) != (EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB) );
+    assert( check_raw_bitflag_consistency_tests("NO_GENES",report) != 0 );
 
-    assert( check_raw_consistency_tests("FASTA_HEADER",report) == (FASTA_HEADER|LINE_ENDINGS) );
+    assert( check_raw_bitflag_consistency_tests("NO_CDS",report) == (NO_CDS|PROTEIN_CODING_LACKS_CDS) ); // this was only really used with pseudogene thing but not relevant now with PROTEIN_CODING_LACKS_CDS
+    assert( check_raw_bitflag_consistency_tests("NO_CDS",report) != (PROTEIN_CODING_LACKS_CDS) ); 
 
-    assert( check_raw_consistency_tests("EMBL_FORMAT",report) == (LINE_ENDINGS|EMBL_FORMAT) );
+    assert( check_raw_bitflag_consistency_tests("PARTIAL_MODEL",report) == PARTIAL_MODEL );
+    assert( check_raw_bitflag_consistency_tests("PARTIAL_MODEL_2ENDPOS",report) == PARTIAL_MODEL );
+    assert( check_raw_bitflag_consistency_tests("PARTIAL_MODEL_2ENDPOS",report) != 0x800 );
 
-    assert( check_raw_consistency_tests("NO_FEATLINES",report) == (NO_FEATLINES|LINES_WO_9COLS|NO_GENES|NO_CDS|NO_EXON_CDS|NO_TRANSCRIPTS) );
+    assert( check_raw_bitflag_consistency_tests("GFF_FASTA_HEADER",report) == (LINE_ENDINGS|GFF_FASTA_HEADER) );
 
-    assert( check_raw_consistency_tests("PSEUDOGENES_PRESENT",report) == PSEUDOGENES_PRESENT );
+    assert( check_raw_bitflag_consistency_tests("FASTA_HEADER",report) == (FASTA_HEADER|LINE_ENDINGS) );
+
+    assert( check_raw_bitflag_consistency_tests("EMBL_FORMAT",report) == (LINE_ENDINGS|EMBL_FORMAT) );
+
+    assert( check_raw_bitflag_consistency_tests("NO_FEATLINES",report) == (NO_FEATLINES|LINES_WO_9COLS|NO_GENES|NO_CDS|NO_EXON_CDS|NO_TRANSCRIPTS) );
+
+    assert( check_raw_bitflag_consistency_tests("PSEUDOGENES_PRESENT",report) == PSEUDOGENES_PRESENT );
     // this isn't actually a pseudogene example...!??
-    assert( check_raw_consistency_tests("PSEUDOGENES_PRESENT_2TRANSCRIPT",report) == (NON_PERMITTED_BIOTYPES|EXCESS_CDS_EXON_CONSISTENCY_PROB) );
+    assert( check_raw_bitflag_consistency_tests("PSEUDOGENES_PRESENT_2TRANSCRIPT",report) == (NON_PERMITTED_BIOTYPES|EXCESS_CDS_EXON_CONSISTENCY_PROB) );
 
-    assert( check_raw_consistency_tests("EXCESS_GENE_CONSISTENCY_PROB",report) == EXCESS_GENE_CONSISTENCY_PROB );
+    assert( check_raw_bitflag_consistency_tests("EXCESS_GENE_CONSISTENCY_PROB",report) == EXCESS_GENE_CONSISTENCY_PROB );
 
-    assert( check_raw_consistency_tests("EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB",report) == (EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB|TRANSCRIPT_LACKS_EXONS|PROTEIN_CODING_LACKS_CDS) );
+    assert( check_raw_bitflag_consistency_tests("EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB",report) == (EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB|TRANSCRIPT_LACKS_EXONS|PROTEIN_CODING_LACKS_CDS) );
 
-    assert( check_raw_consistency_tests("NO_EXON_CDS",report) == (NO_EXON_CDS|NO_CDS|TRANSCRIPT_LACKS_EXONS|PROTEIN_CODING_LACKS_CDS|EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB) );
+    assert( check_raw_bitflag_consistency_tests("NO_EXON_CDS",report) == (NO_EXON_CDS|NO_CDS|TRANSCRIPT_LACKS_EXONS|PROTEIN_CODING_LACKS_CDS|EXCESS_TRANS_REL_CDS_EXON_CONSISTENCY_PROB) );
 
-    assert( check_raw_consistency_tests("EXCESS_GENE_CONSISTENCY_PROB_2NOPROTEINCODING",report) == (EXCESS_GENE_CONSISTENCY_PROB|EXCESS_CDS_EXON_CONSISTENCY_PROB) );
+    assert( check_raw_bitflag_consistency_tests("EXCESS_GENE_CONSISTENCY_PROB_2NOPROTEINCODING",report) == (EXCESS_GENE_CONSISTENCY_PROB|EXCESS_CDS_EXON_CONSISTENCY_PROB) );
 
-    assert( check_raw_consistency_tests("NO_TRANSCRIPTS",report) == (NO_TRANSCRIPTS|EXCESS_GENE_CONSISTENCY_PROB|EXCESS_CDS_EXON_CONSISTENCY_PROB) );
+    assert( check_raw_bitflag_consistency_tests("NO_TRANSCRIPTS",report) == (NO_TRANSCRIPTS|EXCESS_GENE_CONSISTENCY_PROB|EXCESS_CDS_EXON_CONSISTENCY_PROB) );
 
-    assert( check_raw_consistency_tests("PARENT_WITHOUT_ID_NOT_CDS_EXON",report) == (PARENT_WITHOUT_ID_NOT_CDS_EXON|EXCESS_CDS_EXON_CONSISTENCY_PROB) );
-    assert( check_raw_consistency_tests("PARENT_WITHOUT_ID_NOT_CDS_EXON_2MISNAMEDCDS",report) == (PARENT_WITHOUT_ID_NOT_CDS_EXON|NON_PERMITTED_BIOTYPES) );
+    assert( check_raw_bitflag_consistency_tests("PARENT_WITHOUT_ID_NOT_CDS_EXON",report) == (PARENT_WITHOUT_ID_NOT_CDS_EXON|EXCESS_CDS_EXON_CONSISTENCY_PROB) );
+    assert( check_raw_bitflag_consistency_tests("PARENT_WITHOUT_ID_NOT_CDS_EXON_2MISNAMEDCDS",report) == (PARENT_WITHOUT_ID_NOT_CDS_EXON|NON_PERMITTED_BIOTYPES) );
 
-    assert( check_raw_consistency_tests("EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB",report) == EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB );
+    assert( check_raw_bitflag_consistency_tests("EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB",report) == EXCESS_TRANS_REL_GENE_CONSISTENCY_PROB );
 
-    assert( check_raw_consistency_tests("TRANSCRIPT_LACKS_EXONS",report) == TRANSCRIPT_LACKS_EXONS );
+    assert( check_raw_bitflag_consistency_tests("TRANSCRIPT_LACKS_EXONS",report) == TRANSCRIPT_LACKS_EXONS );
 
-    assert( check_raw_consistency_tests("PROTEIN_CODING_LACKS_CDS",report) == PROTEIN_CODING_LACKS_CDS );
+    assert( check_raw_bitflag_consistency_tests("PROTEIN_CODING_LACKS_CDS",report) == PROTEIN_CODING_LACKS_CDS );
 
     if(system("cp testfiles/NON_PRINTING_X0D.gff_ORIG testfiles/NON_PRINTING_X0D.gff")!=0) throw runtime_error("couldn't copy file!?!");
-    assert( check_raw_consistency_tests("NON_PRINTING_X0D",report) == (LINE_ENDINGS|NON_PRINTING_X0D) );
+    assert( check_raw_bitflag_consistency_tests("NON_PRINTING_X0D",report) == (LINE_ENDINGS|NON_PRINTING_X0D) );
 
-    assert( check_raw_consistency_tests("NAMES_HAVE_SPACES",report) == NAMES_HAVE_SPACES );
-    assert( check_raw_consistency_tests("NAMES_HAVE_SPACES_2NOSPACES",report) == 0 );
+    assert( check_raw_bitflag_consistency_tests("NAMES_HAVE_SPACES",report) == NAMES_HAVE_SPACES );
+    assert( check_raw_bitflag_consistency_tests("NAMES_HAVE_SPACES_2NOSPACES",report) == 0 );
 
-    // assert( check_raw_consistency_tests("LINES_WO_9COLS",report) == (LINES_WO_9COLS|CDS_PRESENT) );
-    // assert( check_raw_consistency_tests("OVERLAPPING_EXONS",report) == (OVERLAPPING_EXONS|CDS_PRESENT) );
+    // assert( check_raw_bitflag_consistency_tests("LINES_WO_9COLS",report) == (LINES_WO_9COLS|CDS_PRESENT) );
+    // assert( check_raw_bitflag_consistency_tests("OVERLAPPING_EXONS",report) == (OVERLAPPING_EXONS|CDS_PRESENT) );
+
+
+
+
+
+
+
+
+
+
 
 
     cout << "\nTESTS ARE FINE!?!?!\n";
     return 0; 
-    // assert(check_raw_consistency_tests ("",report)== |CDS_PRESENT);
-    // assert( check_raw_consistency_tests("NAMES_HAVE_SPACES",report) == (NAMES_HAVE_SPACES|CDS_PRESENT) );
+    // assert(check_raw_bitflag_consistency_tests ("",report)== |CDS_PRESENT);
+    // assert( check_raw_bitflag_consistency_tests("NAMES_HAVE_SPACES",report) == (NAMES_HAVE_SPACES|CDS_PRESENT) );
     CHECKIT(NAMES_HAVE_SPACES);
 
 
 
 
 
-    // cout << "checking " "OVERLAPPING_EXONS" << "\n"; ((check_raw_consistency_tests ("OVERLAPPING_EXONS", report)==(1<<29)) ? static_cast<void> (0) : __assert_fail ("check_raw_consistency_tests (\"OVERLAPPING_EXONS\", report)==(1<<29)", "gff_validation.cpp", 888, __PRETTY_FUNCTION__));
+    // cout << "checking " "OVERLAPPING_EXONS" << "\n"; ((check_raw_bitflag_consistency_tests ("OVERLAPPING_EXONS", report)==(1<<29)) ? static_cast<void> (0) : __assert_fail ("check_raw_bitflag_consistency_tests (\"OVERLAPPING_EXONS\", report)==(1<<29)", "gff_validation.cpp", 888, __PRETTY_FUNCTION__));
 
 
     return true;
@@ -1082,49 +1088,49 @@ bool validation_tests (std::string& report) {
 
 cout << "ARGH";
 unsignedll named_mask = NAMES_HAVE_SPACES|CDS_PRESENT;
-unsignedll named_return = check_raw_consistency_tests ("NAMES_HAVE_SPACES",report);
-if(NAMES_HAVE_SPACES|CDS_PRESENT==check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)) {
+unsignedll named_return = check_raw_bitflag_consistency_tests ("NAMES_HAVE_SPACES",report);
+if(NAMES_HAVE_SPACES|CDS_PRESENT==check_raw_bitflag_consistency_tests ("NAMES_HAVE_SPACES",report)) {
 if (named_mask==named_return) { 
 if(NAMES_HAVE_SPACES|CDS_PRESENT==named_return) {
-if(0x40002==check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)) {
-if (check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)==named_mask) { 
+if(0x40002==check_raw_bitflag_consistency_tests ("NAMES_HAVE_SPACES",report)) {
+if (check_raw_bitflag_consistency_tests ("NAMES_HAVE_SPACES",report)==named_mask) { 
 
 gives after preprocessing:
 cout << "ARGH";
 unsignedll named_mask = (1ull<<1)|(1ull<<18);
-unsignedll named_return = check_raw_consistency_tests ("NAMES_HAVE_SPACES",report);
-if((1ull<<1)|(1ull<<18)==check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)) {
+unsignedll named_return = check_raw_bitflag_consistency_tests ("NAMES_HAVE_SPACES",report);
+if((1ull<<1)|(1ull<<18)==check_raw_bitflag_consistency_tests ("NAMES_HAVE_SPACES",report)) {
 if (named_mask==named_return) {
 if((1ull<<1)|(1ull<<18)==named_return) {
-if(0x40002==check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)) {
-if (check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)==named_mask) {
+if(0x40002==check_raw_bitflag_consistency_tests ("NAMES_HAVE_SPACES",report)) {
+if (check_raw_bitflag_consistency_tests ("NAMES_HAVE_SPACES",report)==named_mask) {
 */
 /* 
 unsignedll named_mask = NAMES_HAVE_SPACES|CDS_PRESENT;
-unsignedll named_return = check_raw_consistency_tests ("NAMES_HAVE_SPACES",report);
+unsignedll named_return = check_raw_bitflag_consistency_tests ("NAMES_HAVE_SPACES",report);
 
         /// it is somehting to do with using temporaries?!?
 
         cout << "masks= " << std::bitset<sizeof(long long)*8>(named_mask) << " hmmmm = " << std::hex << named_mask << "\n";
         cout << "return= " << std::bitset<sizeof(long long)*8>(named_return) << " hmmmm = " << std::hex << named_return << "\n";
 
-    if((NAMES_HAVE_SPACES|CDS_PRESENT)!=check_raw_consistency_tests ("NAMES_HAVE_SPACES",report))
+    if((NAMES_HAVE_SPACES|CDS_PRESENT)!=check_raw_bitflag_consistency_tests ("NAMES_HAVE_SPACES",report))
       cout << " *** --- temporary mask is correctly different when compound mask is put in parenthesis\n";
 
     if (named_mask!=named_return) 
       cout << " --- named are correctly different\n";
 
-    if (check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)!=named_mask) 
+    if (check_raw_bitflag_consistency_tests ("NAMES_HAVE_SPACES",report)!=named_mask) 
       cout <<" --- temporary return is correctly different from named mask\n"; 
 
     if((NAMES_HAVE_SPACES|CDS_PRESENT)!=named_return)
       cout <<" *** --- named_return correctly different to temporary mask when put in parenthesis!?!?!?\n";
 
-    if(0x40002!=check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)) 
+    if(0x40002!=check_raw_bitflag_consistency_tests ("NAMES_HAVE_SPACES",report)) 
       cout << " --- string literal evaulates correctly as different with temporary\n";
 
 
-    cout << std::bitset<sizeof(long long)*8>(check_raw_consistency_tests ("NAMES_HAVE_SPACES",report)) << "\n";
+    cout << std::bitset<sizeof(long long)*8>(check_raw_bitflag_consistency_tests ("NAMES_HAVE_SPACES",report)) << "\n";
 */
 
 }
@@ -1200,15 +1206,27 @@ std::string capmon_html_table(unsigned long long bitflag,std::stringstream& strs
 
 }
 
-
 }
 
-unsignedll check_raw_consistency_tests (const char* filename, std::string& report, DB_PARAMS* dbp) {
-// unsignedll check_raw_consistency_tests (const char* filename, std::string& report, DB_PARAMS* dbp = 0) {
+bool check_capmon_bool_test (const char* filename, std::string& report, DB_PARAMS* dbp) {
 
     std::string file(filename);
     file = "./testfiles/" + file + ".gff";
-    cout << "using file " << file << "\n";
+    cout << "Boolean check ";
+    if (dbp!=0) cout << ": RUNNING SCF NAME CHECK ";
+    else cout << ": NOT running scf name check ";
+    bool x = capmon_gff_validation (file.c_str(), report, dbp);
+    cout << "- using file " << file << " : " << std::boolalpha << x << "\n";
+    // return capmon_gff_validation (file.c_str(), report, dbp);
+    return x;
+}
+
+unsignedll check_raw_bitflag_consistency_tests (const char* filename, std::string& report, DB_PARAMS* dbp) {
+// unsignedll check_raw_bitflag_consistency_tests (const char* filename, std::string& report, DB_PARAMS* dbp = 0) {
+
+    std::string file(filename);
+    file = "./testfiles/" + file + ".gff";
+    cout << "Bitflag check - using file " << file << "\n";
     gff_holder dummy; // just let it go out of scope?!?
     std::stringstream strstrm(std::stringstream::out);
     unsignedll bitflag = 0;
@@ -1224,7 +1242,7 @@ unsignedll check_raw_consistency_tests (const char* filename, std::string& repor
 
 // have summary separate so have single routine that returns bitflag and data structure that capmon calls - use it for test all flags against appropriate files?!?
 
-bool capmon_gff_validation (const char* filename, std::string& report, DB_PARAMS* dbp = 0) {
+bool capmon_gff_validation (const char* filename, std::string& report, DB_PARAMS* dbp) {
 
     ///y in separate wrapper for gff_basic_validation_checks have this actually get returned to re-building?!?
     gff_holder dummy; // just let it go out of scope?!?
@@ -1255,7 +1273,10 @@ bool capmon_gff_validation (const char* filename, std::string& report, DB_PARAMS
     ///// or just have flag to by-pass the call?!?
     bitflag = details::gff_basic_validation_1d_individual_model_checks(bitflag, strstrm, dummy);
 
+
     details::gff_basic_validation_1x_file_cleanup (bitflag,filename,strstrm);
+
+
 
     /////// now ready to do all bitflag tests vs. file examples?!?
 
@@ -1275,10 +1296,11 @@ bool capmon_gff_validation (const char* filename, std::string& report, DB_PARAMS
 
     ///r will return the bitflag at this point - then interogate it in caller?!?
 
+    // cout << "\n\tFLAG = " << std::bitset<sizeof(long long)*8>(bitflag) << "\n";
     // bool no_cds_and_no_pseudogenes = (bitflag & NO_CDS_AND_NO_PSEUDOGENES)==NO_CDS_AND_NO_PSEUDOGENES; // i.e. testing the exact combination?!?
     // i.e. if 'any' of the bit masks are active stop
     bool bitwise_stop = bitflag & PROBLEM; // PROBLEM = ~PROBLEM; //  bool bitwise_proceed = bitflag & PROBLEM;
-
+    // cout << "\n\tSTOP = " << std::bitset<sizeof(long long)*8>(bitwise_stop) << "\n";
     // if (genes==0||transcripts==0||exon_cds==0||no_cds_and_no_pseudogenes||bitwise_stop) {
     if (bitwise_stop) return false;
     // if (no_cds_and_no_pseudogenes||bitwise_stop) return false;
@@ -1307,3 +1329,52 @@ int main () {
     cout << "\n\ndone\n\n";
 }
 
+/* 
+
+    try {
+
+        MYSQL *conn;
+        MYSQL_RES *result;
+        MYSQL_ROW row;
+        MYSQL_FIELD *field;
+        conn = mysql_init(NULL);
+
+        if(mysql_real_connect(conn,dbp->host(),dbp->user(),dbp->pass(),dbp->dbname(),dbp->port(),NULL,0) == NULL)
+          throw MySqlError("couldn't connect to database. exiting.");
+
+        for (std::set<std::string>::iterator sit = nh.scaffolds.begin() ; sit != nh.scaffolds.end() ; sit++) { // prolly ought to be a functor...
+
+            // options: (1) bind parameters/statement prepare - but the actual binding part is pretty darned ugly!?! - http://dev.mysql.com/doc/refman/5.0/en/mysql-stmt-execute.html
+            // http://dev.mysql.com/doc/refman/5.0/en/mysql-stmt-execute.html
+            char qbuf[STRING_SIZE]; // (2)  sprintf...
+            sprintf(qbuf, SPRINTF_STRING, sit->c_str());
+
+            if (mysql_query(conn,qbuf))
+              throw MySqlError("unable to access seq_region table - is this really a e!/cap db?!?");
+
+            if(!(result = mysql_store_result(conn))) { //y get the result set
+                throw runtime_error ("unable to query database for seq_region!");
+            } else {
+                row = mysql_fetch_row(result);
+                /// if just selecting then this would indicate no entry - but that's not v. safe
+                /// better to do a count which guarantees a result and allows other f'ups to be distinguished
+                if (row == 0) {
+                    throw runtime_error ("null pointer returned on db query!");
+                } else {
+                    if (atoi(row[0]) == 0) {
+                        strstrm << "<p>There is no scaffold named " << sit->c_str() << " in cap db</p>\n";
+                        bitflag |= UNKNOWN_SCAFFOLD;
+                    }
+                }
+            }
+            mysql_free_result(result);
+        }
+        ///y freeing here will give invalid ponters!?! - duh
+        mysql_close(conn);
+
+    } catch (std::runtime_error e) {
+        std::string prob("Exception thrown : ");
+        throw; // propagate up...
+    }
+
+*/
