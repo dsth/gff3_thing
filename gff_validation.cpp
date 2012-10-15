@@ -21,7 +21,9 @@
 #include "gff_validation.h"
 
 #ifdef CAPMON_EXT
-#include <mysql/mysql.h> 
+// #include <mysql/mysql.h> 
+#include "toolz.h"
+toolz::MYSQL_ADAPTOR* toolz::MYSQL_ADAPTOR::me_ptr = 0;
 #endif
 
 #define MAX_ID_LENGTH 50
@@ -39,8 +41,6 @@
 #define TESTIT(x,y) cout << "checking " #x << "\n"; assert(check_raw_consistency_tests (#x, report)==x|y)
 
 #define CHECKIT(x) cout << "\n> checking file " #x ".gff : \n"; bitflag = check_raw_consistency_tests (#x, report); cout << #x " =\n\t" << std::bitset<sizeof(long long)*8>(x) << "\n"
-
-unsigned long long check_raw_consistency_tests (const char*, std::string&);
 
 /// perhaps use unordered_map (transcripts) and unordered_multimap (cds/exon)?!? 
 
@@ -61,6 +61,9 @@ typedef boost::regex regex;
 typedef boost::smatch smatch;
 typedef feature_min feature;
 typedef unsigned long long unsignedll;
+
+unsignedll check_raw_consistency_tests (const char*, std::string&, DB_PARAMS* dbp = 0);
+// unsigned long long check_raw_consistency_tests (const char*, std::string&, DB_PARAMS* = 0);
 
 // must put back check for non-unique names?!?
 struct name_holder {
@@ -557,7 +560,7 @@ unsigned long long gff_basic_validation_1a_gff_parse (const char* filename, std:
 
 }
 
-unsigned long long gff_basic_validation_1b_gff_name_checks (unsigned long long bitflag, std::stringstream& strstrm, name_holder& nh, gff_holder& gh) {
+unsigned long long gff_basic_validation_1b_gff_name_checks (unsigned long long bitflag, std::stringstream& strstrm, name_holder& nh, gff_holder& gh,DB_PARAMS* dbp=0) {
 
 ///y simple checks for feature id/parent names...
 
@@ -622,6 +625,92 @@ unsigned long long gff_basic_validation_1b_gff_name_checks (unsigned long long b
 
 
 //fend
+
+    if (dbp) { 
+
+#ifdef CAPMON_EXT
+
+        cout << "using adaptor\n";
+        toolz::MYSQL_ADAPTOR::connect(*dbp);
+
+
+        cout << "using legacy thing\n";
+        for (std::set<std::string>::iterator sit = nh.scaffolds.begin() ; sit != nh.scaffolds.end() ; sit++) { // prolly ought to be a functor...
+            char qbuf[STRING_SIZE]; // (2)  sprintf...
+            sprintf(qbuf, SPRINTF_STRING, sit->c_str());
+            std::string count = toolz::MYSQL_ADAPTOR::get_instance()->generic_query<std::string>(qbuf);
+            if (std::stoi(count) == 0) {
+                strstrm << "<p>There is no scaffold named " << sit->c_str() << " in cap db</p>\n";
+                bitflag |= UNKNOWN_SCAFFOLD;
+            }
+        }
+
+        // toolz::MYSQL_ADAPTOR::disconnect();
+
+    // cout << "\n[1c] scaffold name checks\n";
+
+//fstart 
+
+///  the mysql part - i.e. e! dependent checks are purely about scaffolds being known - i.e. non-coding cds is via loader?!?
+/// either way these are fairly simple to go from either flat-file of db but need to be separate to stop dependencies
+/// just required std::set<std::string>::iterator of names to check for?!?
+
+    try {
+
+        MYSQL *conn;
+        MYSQL_RES *result;
+        MYSQL_ROW row;
+        MYSQL_FIELD *field;
+        conn = mysql_init(NULL);
+
+        if(mysql_real_connect(conn,dbp->host(),dbp->user(),dbp->pass(),dbp->dbname(),dbp->port(),NULL,0) == NULL)
+          throw MySqlError("couldn't connect to database. exiting.");
+
+        for (std::set<std::string>::iterator sit = nh.scaffolds.begin() ; sit != nh.scaffolds.end() ; sit++) { // prolly ought to be a functor...
+
+            // options: (1) bind parameters/statement prepare - but the actual binding part is pretty darned ugly!?! - http://dev.mysql.com/doc/refman/5.0/en/mysql-stmt-execute.html
+            // http://dev.mysql.com/doc/refman/5.0/en/mysql-stmt-execute.html
+            char qbuf[STRING_SIZE]; // (2)  sprintf...
+            sprintf(qbuf, SPRINTF_STRING, sit->c_str());
+
+            if (mysql_query(conn,qbuf))
+              throw MySqlError("unable to access seq_region table - is this really a e!/cap db?!?");
+
+            if(!(result = mysql_store_result(conn))) { //y get the result set
+                throw runtime_error ("unable to query database for seq_region!");
+            } else {
+                row = mysql_fetch_row(result);
+                /// if just selecting then this would indicate no entry - but that's not v. safe
+                /// better to do a count which guarantees a result and allows other f'ups to be distinguished
+                if (row == 0) {
+                    throw runtime_error ("null pointer returned on db query!");
+                } else {
+                    if (atoi(row[0]) == 0) {
+                        strstrm << "<p>There is no scaffold named " << sit->c_str() << " in cap db</p>\n";
+                        bitflag |= UNKNOWN_SCAFFOLD;
+                    }
+                }
+            }
+            mysql_free_result(result);
+        }
+        ///y freeing here will give invalid ponters!?! - duh
+        mysql_close(conn);
+
+    } catch (std::runtime_error e) {
+        std::string prob("Exception thrown : ");
+        throw; // propagate up...
+    }
+
+//fend
+
+#else
+
+    cout << "\n[1c] MUST compile with CAPMON_EXT for scaffold name checks aagainst mysql/e! db instance\n";
+
+#endif
+
+
+    }
 
     return bitflag;
 
@@ -738,77 +827,7 @@ unsigned long long gff_basic_validation_1d_individual_model_checks (unsigned lon
 
 }
 
-unsigned long long gff_basic_validation_1c_scfnames (unsigned long long bitflag, std::stringstream& strstrm, name_holder& nh, DB_PARAMS* dbp) {
 
-///y scaffold names - needs to be converted to use mysql adaptor?!? - do once integrating into capmon?!? - changes must be only local additions
-
-#ifdef CAPMON_EXT
-
-    // cout << "\n[1c] scaffold name checks\n";
-
-//fstart 
-
-///  the mysql part - i.e. e! dependent checks are purely about scaffolds being known - i.e. non-coding cds is via loader?!?
-/// either way these are fairly simple to go from either flat-file of db but need to be separate to stop dependencies
-/// just required std::set<std::string>::iterator of names to check for?!?
-
-    try {
-
-        MYSQL *conn;
-        MYSQL_RES *result;
-        MYSQL_ROW row;
-        MYSQL_FIELD *field;
-        conn = mysql_init(NULL);
-
-        if(mysql_real_connect(conn,dbp->host(),dbp->user(),dbp->pass(),dbp->dbname(),dbp->port(),NULL,0) == NULL)
-          throw MySqlError("couldn't connect to database. exiting.");
-
-        for (std::set<std::string>::iterator sit = nh.scaffolds.begin() ; sit != nh.scaffolds.end() ; sit++) { // prolly ought to be a functor...
-
-            // options: (1) bind parameters/statement prepare - but the actual binding part is pretty darned ugly!?! - http://dev.mysql.com/doc/refman/5.0/en/mysql-stmt-execute.html
-            // http://dev.mysql.com/doc/refman/5.0/en/mysql-stmt-execute.html
-            char qbuf[STRING_SIZE]; // (2)  sprintf...
-            sprintf(qbuf, SPRINTF_STRING, sit->c_str());
-
-            if (mysql_query(conn,qbuf))
-              throw MySqlError("unable to access seq_region table - is this really a e!/cap db?!?");
-
-            if(!(result = mysql_store_result(conn))) { //y get the result set
-                throw runtime_error ("unable to query database for seq_region!");
-            } else {
-                row = mysql_fetch_row(result);
-                /// if just selecting then this would indicate no entry - but that's not v. safe
-                /// better to do a count which guarantees a result and allows other f'ups to be distinguished
-                if (row == 0) {
-                    throw runtime_error ("null pointer returned on db query!");
-                } else {
-                    if (atoi(row[0]) == 0) {
-                        strstrm << "<p>There is no scaffold named " << sit->c_str() << " in cap db</p>\n";
-                        bitflag |= UNKNOWN_SCAFFOLD;
-                    }
-                }
-            }
-            mysql_free_result(result);
-        }
-        ///y freeing here will give invalid ponters!?! - duh
-        mysql_close(conn);
-
-    } catch (std::runtime_error e) {
-        std::string prob("Exception thrown : ");
-        throw; // propagate up...
-    }
-
-//fend
-
-#else
-
-    cout << "\n[1c] MUST compile with CAPMON_EXT for scaffold name checks aagainst mysql/e! db instance\n";
-
-#endif
-
-    return bitflag;
-
-}
 
 void gff_basic_validation_1x_file_cleanup (unsigned long long bitflag,const char* filename,std::stringstream& strstrm) {
 
@@ -882,9 +901,11 @@ unsigned long long generic_validation_and_store (const char* filename, std::stri
 //r DUH!?!? (1<<i) is likely a 4 word numeric literal of type signed int default - otherwise get wrap around 
 //r use LL or ULL : cout << "value=" << 0xffull << "\n";
 
-bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp = 0) {
+bool validation_tests (std::string& report) {
 // bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp) {
 
+
+// need to re-write the mysql part to use the adaptor thing?!?
 
     // CHECKIT(OVERLAPPING_EXONS);
     // CHECKIT(NON_PERMITTED_BIOTYPES);
@@ -892,6 +913,7 @@ bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp
     // CHECKIT(NON_UNIQUE_ID);
     // CHECKIT(LINES_WO_9COLS);
     // CHECKIT(BLANK_LINES);
+
 
     ///y have bit flag test AND bool capmon type return test?!?
 
@@ -905,12 +927,23 @@ bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp
 
 /////////////// IF USING COMPOUND MASKS e.g. mask1|mask2 YOU MUST PUT IN PARENTHESIS!?!?! DUH!?!? - presumably due to operator '==' having higher binding precendence that bitwise or '|'
 
-
     // bitflag = check_raw_consistency_tests("NAMES_HAVE_SPACES",report);
     // cout << "return value =\n\t" << std::bitset<sizeof(long long)*8>(bitflag) << "\n";
     // for (int i = 0 ; i < sizeof(long long)*8 ; i++) if (int x = bitflag&(1ull<<i)) cout << " Active bit from return " << std::dec << i << "\n"; //  << " and " << x << "\n";
 
-    /*  problems?!? - put in conditional test?!?  #define UNKNOWN_SCAFFOLD                            (1ull<<12)  */
+#ifdef CAPMON_EXT
+{
+
+    //y get to the bottom of the vanishing temporaries with inlined member functions using pointers?!?
+    DB_PARAMS dbpnew("mysql-eg-devel-3.ebi.ac.uk","ensrw","scr1b3d3",4208,"dsth_CapDb_Mar07_anopheles_gambiae_core_13_66_3");
+    // DB_PARAMS dbpnew(std::string("DBI:mysql:database=dsth_CapDb_Mar07_anopheles_gambiae_core_13_66_3;host=mysql-eg-devel-3.ebi.ac.uk;port=4208,ensrw,scr1b3d3"));
+    //std::string s("DBI:mysql:database=dsth_CapDb_Mar06_anopheles_gambiae_core_13_66_3;host=mysql-eg-devel-3.ebi.ac.uk;port=4208,ensrw,scr1b3d3");
+    ///DB_PARAMS dbpnew(s);
+    assert( check_raw_consistency_tests("UNKNOWN_SCAFFOLD",report, &dbpnew) == UNKNOWN_SCAFFOLD);
+    assert( check_raw_consistency_tests("UNKNOWN_SCAFFOLD_2KNOWNNAME",report, &dbpnew) == 0);
+
+}
+#endif
 
     assert( check_raw_consistency_tests("FINE",report) == 0);
 
@@ -988,6 +1021,7 @@ bool validation_tests (const char* filename, std::string& report, DB_PARAMS* dbp
     assert( check_raw_consistency_tests("NON_PRINTING_X0D",report) == (LINE_ENDINGS|NON_PRINTING_X0D) );
 
     assert( check_raw_consistency_tests("NAMES_HAVE_SPACES",report) == NAMES_HAVE_SPACES );
+    assert( check_raw_consistency_tests("NAMES_HAVE_SPACES_2NOSPACES",report) == 0 );
 
     // assert( check_raw_consistency_tests("LINES_WO_9COLS",report) == (LINES_WO_9COLS|CDS_PRESENT) );
     // assert( check_raw_consistency_tests("OVERLAPPING_EXONS",report) == (OVERLAPPING_EXONS|CDS_PRESENT) );
@@ -1169,7 +1203,8 @@ std::string capmon_html_table(unsigned long long bitflag,std::stringstream& strs
 
 }
 
-unsignedll check_raw_consistency_tests (const char* filename, std::string& report) {
+unsignedll check_raw_consistency_tests (const char* filename, std::string& report, DB_PARAMS* dbp) {
+// unsignedll check_raw_consistency_tests (const char* filename, std::string& report, DB_PARAMS* dbp = 0) {
 
     std::string file(filename);
     file = "./testfiles/" + file + ".gff";
@@ -1179,8 +1214,8 @@ unsignedll check_raw_consistency_tests (const char* filename, std::string& repor
     unsignedll bitflag = 0;
     name_holder nh;
     bitflag = details::gff_basic_validation_1a_gff_parse (file.c_str(), strstrm, nh, dummy);
-    bitflag = details::gff_basic_validation_1b_gff_name_checks (bitflag, strstrm, nh, dummy);
-    // bitflag = details::gff_basic_validation_1c_scfnames (bitflag, strstrm, nh, dbp);
+    bitflag = details::gff_basic_validation_1b_gff_name_checks (bitflag, strstrm, nh, dummy, dbp);
+    
     bitflag = details::gff_basic_validation_1d_individual_model_checks(bitflag, strstrm, dummy);
     report = strstrm.str();
     return bitflag;
@@ -1208,10 +1243,9 @@ bool capmon_gff_validation (const char* filename, std::string& report, DB_PARAMS
     // bitflag = details::gff_basic_validation_1a_gff_parse (filename, strstrm, nh, dummy, dbp);
     // long long bitflag = details::gff_basic_validation_1a_gff_parse (filename, strstrm, dummy, dbp);
 
-    bitflag = details::gff_basic_validation_1b_gff_name_checks (bitflag, strstrm, nh, dummy);
+    bitflag = details::gff_basic_validation_1b_gff_name_checks (bitflag, strstrm, nh, dummy, dbp);
 
 //     if(dbp) // running directly without CAPMON_EXT will just moan at you - i.e. don't want unecessary linking dependencies?!?
-      bitflag = details::gff_basic_validation_1c_scfnames (bitflag, strstrm, nh, dbp);
 
     //y could put in fasta checking?!?
 
@@ -1256,18 +1290,19 @@ int main () {
     // have a validation level - low stringency only does 1a
     // higher stringency does the actual model checks?!?
     std::string summary;
-    details::validation_tests("Yb.gff3",summary);
+
+    details::validation_tests(summary);
+    // details::validation_tests(summary,&dbpnew);
 
     return 0;
     // cout << " " << std::boolalpha << capmon_gff_validation("exonprob.gff",summary)<<"\n\n";
-    cout << " " << std::boolalpha << capmon_gff_validation("Yb.gff3",summary)<<"\n\n";
+//     cout << " " << std::boolalpha << capmon_gff_validation("Yb.gff3",summary)<<"\n\n";
 
 
 
 
     //     return 0;
     // cout << " " << std::boolalpha << gff_basic_validation_1a_gff_parse("../gff/Yb_superscaffold_v1-0.gff3",summary)<<"\n\n";
-    details::validation_tests("Yb.gff3",summary);
 
     cout << "\n\ndone\n\n";
 }
